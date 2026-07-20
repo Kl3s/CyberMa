@@ -1,0 +1,354 @@
+<!DOCTYPE html><html lang="en" theme-mode="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Session Hijacking - Understading Cookie-Based Authentication | CyberMa</title><meta name="keywords" content="Session Hijacking,Cookies,Authentication,Web Security,Learning"><meta name="description" content="Learn how Session Hijacking works, how cookies authenticate users, common attack vectors, and modern defensive tech">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Session Hijacking - Understading Cookie-Based Authentication">
+<meta property="og:url" content="https://kl3s.github.io/2026/07/19/session/index.html">
+<meta property="og:site_name" content="CyberMa">
+<meta property="og:description" content="Learn how Session Hijacking works, how cookies authenticate users, common attack vectors, and modern defensive tech">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-07-19T19:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-20T10:12:19.702Z">
+<meta property="article:author" content="Klasster">
+<meta property="article:tag" content="Authentication">
+<meta property="article:tag" content="Cookies">
+<meta property="article:tag" content="Learning">
+<meta property="article:tag" content="Session Hijacking">
+<meta property="article:tag" content="Web Security">
+<meta name="twitter:card" content="summary"><link rel="canonical" href="https://kl3s.github.io/2026/07/19/session/"><link rel="icon" type="image/x-icon" href="/CyberMa/favicon.ico"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/Bender.ttf"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/BenderLight.woff2"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/JetBrainsMono-Regular.woff2"><link rel="stylesheet" href="/CyberMa/css/arknights.css"><style>@font-face {
+  font-family: Bender;
+  src: local('Bender'), url("/CyberMa/font/Bender.ttf"), url("/CyberMa/font/Bender.otf");
+}
+@font-face {
+  font-family: BenderLight;
+  src: local('BenderLight'), url("/CyberMa/font/BenderLight.woff2") format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: local('JetBrains Mono'), url('/CyberMa/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+</style><meta name="page-config" content="{&quot;code_fold&quot;:null}"><script class="pjax-js">var config = {"root":"/CyberMa/","code_fold":15,"search":{"preload":false,"activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy"}};
+var page_config = {
+  code_fold: null
+};
+function updatePageConfig() {
+  var newPageConfig = document.querySelector('meta[name="page-config"]');
+  if (newPageConfig) {
+    page_config = JSON.parse(newPageConfig.content);
+  }
+}
+document.addEventListener('pjax:complete', function() { updatePageConfig(); });
+updatePageConfig();</script><link type="text/css" rel="stylesheet" href="/CyberMa/lib/encrypt/hbe.style.css"><script src="//unpkg.com/mermaid@11.12.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/CyberMa/lib/fontawesome/css/all.min.css"><script>if (window.localStorage.getItem('theme-mode') === 'light')
+ document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark')
+ document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/CyberMa/font/BenderLight.woff2") format('woff2');
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/CyberMa/font/JetBrainsMono-Regular.woff2') format('woff2');
+}</style><style>:root {
+ --dark-background: url('https://ak.hypergryph.com/assets/index/images/ak/pc/bk.jpg');
+ --light-background: url('/CyberMa/img/bk.jpg');
+ --theme-encrypt-confirm: 'confirm'
+}</style><script defer src="/CyberMa/js/arknights.js"></script><script defer src="/CyberMa/js/search.js"></script><script defer type="module">import mermaid from '//unpkg.com/mermaid@11.12.2/dist/mermaid.esm.min.mjs';
+window.mermaid = mermaid;
+code.paintMermaid();
+</script><script async src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script async src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script async src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script async src="/CyberMa/lib/encrypt/hbe.js"></script><script async src="/CyberMa/js/pjax.js"></script><script class="pjax-js">reset= () => {document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js','data-pjax','.vercount','meta[name=page-config]'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script><script class="pjax-js">reset= () => {document.querySelector('.lg-container')?.remove()
+const postBg = document.querySelector('#post-bg');
+if (postBg) lightGallery(postBg, {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js','data-pjax','.vercount','meta[name=page-config]'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="loading" style="opacity: 0;"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><div class="navBtn"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><nav><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup" tabindex="0"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/CyberMa/"><span class="navItemTitle">Home</span></a></li><li class="navItem"><a class="navBlock" href="/CyberMa/about/"><span class="navItemTitle">About</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/CyberMa/archives/"><span class="navItemTitle">Archives</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Session Hijacking - Understading Cookie-Based Authentication</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2026-07-19T19:00:00.000Z" id="date"> 2026-07-19</time></div></span><br><span>Last Update: <div class="control"><time datetime="2026-07-20T10:12:19.702Z" id="updated"> 2026-07-20</time></div></span></div></div><hr><div id="post-content"><h1 id="Session-Hijacking"><a href="#Session-Hijacking" class="headerlink" title="Session Hijacking"></a>Session Hijacking</h1><blockquote>
+<p><strong>Difficulty:</strong> ⭐⭐⭐ ☆ ☆</p>
+<p><strong>Category:</strong> Web Security</p>
+<p><strong>Estimated Reading Time:</strong> 20-30 minutes</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>⚠ <strong>Disclaimer</strong></p>
+<p>Had articale ghaykon educational only.</p>
+<p>L’objectif huwa tfham kifash session hijacking ktkhdm o kifash les sites ki9dro ys3bo exploit dialha o kifash nta thmi rask mnha. </p>
+</blockquote>
+<hr>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Kamlin knst3mlo Discord, Instagram, Facebook, Gmail…</p>
+<p>Fash katdir login awel mra, kaytlbo mnk:</p>
+<ul>
+<li>Username &#x2F; Email</li>
+<li>Password</li>
+</ul>
+<p>Walakin mn moraha katwli katdkhol normal bla may3awdo ytlbo mnk password kol mra.</p>
+<p>So… kifash hadchi kaykhdm?</p>
+<p>Server kaydir creation lwahed <strong>Session</strong> katremplaci process dial login b user&#x2F;password.</p>
+<p>Had Session katkon linked b wahed identifier smito:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Session ID<br></code></pre></td></tr></table></figure>
+<p>O ghaliban had <strong>Session ID</strong> katsajal f <strong>Cookie</strong>.</p>
+<hr>
+<h1 id="Example"><a href="#Example" class="headerlink" title="Example:"></a>Example:</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">stateDiagram-v2<br>    [*] --&gt; Login<br><br>    Login --&gt; CredentialsSubmitted<br><br>    CredentialsSubmitted --&gt; ServerVerification<br><br>    ServerVerification --&gt; LoginFailed<br>    ServerVerification --&gt; SessionCreated<br><br>    LoginFailed --&gt; Login<br><br>    SessionCreated --&gt; SetCookie<br><br>    SetCookie --&gt; BrowserStoresCookie<br><br>    BrowserStoresCookie --&gt; Authenticated<br><br>    Authenticated --&gt; [*]<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>Note:</strong> Kayn bzaf dial vulnerabilities o misconfigurations li t9dr tw9a3 f had lmarahil. Ghadi nhdro 3lihom b tafsil mn b3d. </p>
+</blockquote>
+<p>Daba bash tfham had process mzyan, aju ndiroha step by step.</p>
+<ol>
+<li>Nta katktb Username + Password.</li>
+<li>Server kayverify credentials.</li>
+<li>Ila kano valid, kaycreate Session.</li>
+<li>Kayrj3 Session ID b <code>Set-Cookie</code>.</li>
+<li>Browser kay7fed Cookie.</li>
+<li>Browser kayb9a kaytsift Cookie automatically f ay request.</li>
+</ol>
+<p>donc haka mktb9ash kdir login fkol mra tbghi dir chi haja f site ex: instagram. kib9a 3a9l 3lik bdek session.</p>
+<hr>
+<h1 id="Session-Hijacking-1"><a href="#Session-Hijacking-1" class="headerlink" title="Session Hijacking"></a>Session Hijacking</h1><p>Server kayb9a 3arfk b Session ID, machi b password.</p>
+<p>Nakhdu Pinterest mtalan </p>
+<p>Browser dialk kaykhli ghir:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">_pinterest_sess=TWc9PSYyOWRlc1JkM2w1YVloRTFVWFIycWZFN1dFdmdmL2RmdWo2.........TzZ3PQ==<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>Note:</strong> Mashi darori tkon haka session&#x3D; abdwa (plaintext) f real world ghaliban ktkon encrypted o ta key name mashi darori ykon session y9dr ykon _pinterest_sess bhal f pinterest y9dr ykon smia akhra fsite akhur.</p>
+</blockquote>
+<p>Ama server huwa li kayrbt had Session b information dialk.</p>
+<p>Bhal:</p>
+<ul>
+<li>Username</li>
+<li>Email</li>
+<li>Role</li>
+<li>Permissions</li>
+<li>Login Time</li>
+<li>Expiration</li>
+<li>…</li>
+</ul>
+<p>Hadchi kaykhtalef mn server l server 3la 7sab implementation.</p>
+<p>Donc password beh kndiro create Session.</p>
+<p>Mn b3dha Session hia li katwli lkey dial login.</p>
+<p>Hna kiji lconcept dial:</p>
+<p> <strong>Session Hijacking</strong></p>
+<p>Attacker mam7tajch y3rf:</p>
+<ul>
+<li>Password</li>
+<li>Email</li>
+<li>Username</li>
+</ul>
+<p>O f b3d scenarios ta MFA t9dr mat3awnch ila kant Session ba9a valid.</p>
+<p>3lach?</p>
+<p>Hit server kaychof ghir:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Cookie:<br>session=abc123<br></code></pre></td></tr></table></figure>
+
+<p>Ila had Session ba9a valid…</p>
+<p>Server kaygol:</p>
+<blockquote>
+<p>“Hada user deja authenticated.”</p>
+</blockquote>
+<p>Wakha li kaydir request ma3ndo ta 3ala9a b owner dial l’account.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart LR<br><br>A[Victim Logged In]<br>--&gt; B[Browser Stores Session Cookie]<br><br>B<br>--&gt; C[Attacker Steals Cookie]<br><br>C<br>--&gt; D[Attacker Imports Cookie]<br><br>D<br>--&gt; E[Attacker Sends Requests]<br><br>E<br>--&gt; F[Server Accepts Session]<br><br>F<br>--&gt; G[Authenticated as Victim]<br></code></pre></td></tr></table></figure>
+
+<p>Hada huwa <strong>Session Hijacking</strong>.</p>
+<hr>
+<h1 id="But…How-Can-Cookies-Be-Stolen"><a href="#But…How-Can-Cookies-Be-Stolen" class="headerlink" title="But…How Can Cookies Be Stolen?"></a>But…How Can Cookies Be Stolen?</h1><p>Kayn bzaf dial toro9 bash hadchi ywa9e3.</p>
+<p>Mn ashharhom:</p>
+<ul>
+<li>Stealers</li>
+<li>Malicious Browser Extensions</li>
+<li>XSS Vulnerabilities</li>
+<li>Physical Access</li>
+<li>Session Replay</li>
+<li>MITM (Rare)</li>
+</ul>
+<hr>
+<h1 id="Stealers"><a href="#Stealers" class="headerlink" title="Stealers"></a>Stealers</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart TD<br><br>A[User Logs In]<br>--&gt; B[Browser Stores Session Cookie]<br><br>B<br>--&gt; C[Info-Stealer Malware Runs]<br><br>C<br>--&gt; D[Searches Browser Cookie Databases]<br><br>D<br>--&gt; E[Extracts Valid Session Cookies]<br><br>E<br>--&gt; F[Sends Cookies to Attacker Server]<br><br>F<br>--&gt; G[Attacker Imports Cookie]<br><br>G<br>--&gt; H[Website Accepts Session]<br><br>H<br>--&gt; I[Authenticated as Victim]<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="Browser-Extensions"><a href="#Browser-Extensions" class="headerlink" title="Browser Extensions:"></a>Browser Extensions:</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">%%&#123;init: &#123;<br>  &quot;theme&quot;:&quot;base&quot;,<br>  &quot;themeVariables&quot;:&#123;<br>    &quot;primaryColor&quot;:&quot;transparent&quot;,<br>    &quot;primaryBorderColor&quot;:&quot;#64d2ff&quot;,<br>    &quot;primaryTextColor&quot;:&quot;#e8e8e8&quot;,<br>    &quot;lineColor&quot;:&quot;#64d2ff&quot;,<br>    &quot;textColor&quot;:&quot;#e8e8e8&quot;,<br>    &quot;mainBkg&quot;:&quot;transparent&quot;,<br>    &quot;nodeBorder&quot;:&quot;#64d2ff&quot;<br>  &#125;<br>&#125;&#125;%%<br><br>flowchart TD<br><br>Start([User Installs Extension])<br><br>Start --&gt; Verify&#123;Trusted Source?&#125;<br><br>Verify --&gt;|Official Store &amp; Verified| Safe[Lower Risk]<br><br>Verify --&gt;|Unknown / Fake| Permission<br><br>Permission&#123;High-Risk Permissions Granted?&#125;<br><br>Permission --&gt;|No| Stop[Limited Access]<br><br>Permission --&gt;|Yes| Cookie[Browser Cookies Accessible]<br><br>Cookie --&gt; Send[Cookies Sent to Attacker]<br><br>Send --&gt; Import[Cookie Imported]<br><br>Import --&gt; Login[Authenticated Session]<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="XSS"><a href="#XSS" class="headerlink" title="XSS"></a>XSS</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">%%&#123;init: &#123;<br>  &quot;theme&quot;:&quot;base&quot;,<br>  &quot;themeVariables&quot;:&#123;<br>    &quot;primaryColor&quot;:&quot;transparent&quot;,<br>    &quot;primaryBorderColor&quot;:&quot;#64d2ff&quot;,<br>    &quot;primaryTextColor&quot;:&quot;#e8e8e8&quot;,<br>    &quot;lineColor&quot;:&quot;#64d2ff&quot;,<br>    &quot;textColor&quot;:&quot;#e8e8e8&quot;,<br>    &quot;mainBkg&quot;:&quot;transparent&quot;,<br>    &quot;nodeBorder&quot;:&quot;#64d2ff&quot;<br>  &#125;<br>&#125;&#125;%%<br><br>flowchart TD<br><br>A[Victim Opens Vulnerable Page]<br>--&gt; B&#123;XSS Exists?&#125;<br><br>B --&gt;|No| C[Normal Page]<br><br>B --&gt;|Yes| D[Injected JavaScript]<br><br>D --&gt; E&#123;HttpOnly Cookie?&#125;<br><br>E --&gt;|Yes| F[Cookie Protected]<br><br>E --&gt;|No| G[Read document.cookie]<br><br>G --&gt; H[Send Cookie]<br><br>H --&gt; I[Session Hijacked]<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="Session-Replay"><a href="#Session-Replay" class="headerlink" title="Session Replay"></a>Session Replay</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart LR<br><br>A[Victim Visits Website]<br>--&gt; B[Session Replay Script Loads]<br><br>B<br>--&gt; C[Records User Activity]<br><br>C<br>--&gt; D[Mouse Movement]<br><br>C<br>--&gt; E[Keyboard Input]<br><br>C<br>--&gt; F[Scrolling]<br><br>C<br>--&gt; G[Clicks]<br><br>D<br>--&gt; H[Replay Server]<br><br>E<br>--&gt; H<br><br>F<br>--&gt; H<br><br>G<br>--&gt; H<br><br>H<br>--&gt; I[Session Recording]<br><br></code></pre></td></tr></table></figure>
+
+<p>Session Replay hiya technique kikhdmo beha bzf dial websites bash y9dro ychofok kifash katst3ml site dialhom.</p>
+<p>B simple words, script load m3a page o kaybda record l interaction dialk:</p>
+<ul>
+<li>Mouse movement</li>
+<li>Clicks</li>
+<li>Scroll</li>
+<li>Keyboard input (ila ma tfilterach)</li>
+<li>Page navigation</li>
+<li>Screen size</li>
+<li>Browser information</li>
+</ul>
+<p>Mn b3d had data katsift l replay server fin owner dial site y9dr y3awd ychof session dialk almost b7al video.</p>
+<blockquote>
+<p>Session Replay <strong>mashi attack</strong>. Hadi feature katst3mlha companies b7al Hotjar, FullStory, Microsoft Clarity… bash y7sno UX.(User Experience)</p>
+</blockquote>
+<p>Lmochkil kaybda ila:</p>
+<ul>
+<li>Sensitive fields ma tmaskawch.</li>
+<li>Password fields tsajlo b ghalat.</li>
+<li>Personal information (Email, Phone, Address…) ttsift l third-party.</li>
+<li>Replay scripts ykon feh misconfiguration.</li>
+</ul>
+<p>Dak sa3a replay mab9ash ghir analytics, wla privacy risk.</p>
+<p>💡 Modern Session Replay providers kaydiro masking l password fields, credit cards, w sensitive inputs. Walakin implementation dial website hia li kat7dd wash had protection khdama mzyan ola la.</p>
+<hr>
+<h1 id="MITM"><a href="#MITM" class="headerlink" title="MITM"></a>MITM</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">%%&#123;init: &#123;<br>  &quot;theme&quot;:&quot;base&quot;,<br>  &quot;themeVariables&quot;:&#123;<br>    &quot;primaryColor&quot;:&quot;transparent&quot;,<br>    &quot;primaryBorderColor&quot;:&quot;#64d2ff&quot;,<br>    &quot;primaryTextColor&quot;:&quot;#e8e8e8&quot;,<br>    &quot;lineColor&quot;:&quot;#64d2ff&quot;,<br>    &quot;textColor&quot;:&quot;#e8e8e8&quot;,<br>    &quot;mainBkg&quot;:&quot;transparent&quot;,<br>    &quot;nodeBorder&quot;:&quot;#64d2ff&quot;<br>  &#125;<br>&#125;&#125;%%<br><br>flowchart TB<br><br>    subgraph Internet<br>        NET[(Network)]<br>    end<br><br>    subgraph Victim<br>        V[Victim]<br>        B[HTTP Website]<br>    end<br><br>    subgraph Attacker<br>        A[Attacker]<br>    end<br><br>    subgraph Server<br>        S[Web Server]<br>    end<br><br>    NET --&gt; V<br>    V --&gt;|HTTP Request| S<br>    A -. Intercepts Traffic .-&gt; V<br>    A -. Reads Session Cookie .-&gt; S<br>    A --&gt;|Reuse Cookie| S<br>    S --&gt;|Authenticated Session| A<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>Note</strong></p>
+<p>MITM (Man-In-The-Middle) kan momkin ykon sabab f Session Hijacking ila website mazal khdam b <strong>HTTP</strong>. Hit requests katmchi <strong>unencrypted</strong>, attacker ila kan f nafs network y9dr ychof traffic w ila l9a Session Cookie valid y9dr yst3mloha.</p>
+<p>Lyoum, had lattack wla s3ib bzf m3a <strong>HTTPS (TLS)</strong> hit requests katkon encrypted, w attacker ma y9drch y9ra Cookie ghir b sniffing. Walakin ila website ma mconfigurach mzyan ola kayn downgrade&#x2F;misconfiguration, lkhatar mazal kayn.</p>
+</blockquote>
+<hr>
+<h1 id="Detection"><a href="#Detection" class="headerlink" title="Detection"></a>Detection</h1><p>Sometimes Websites ki9dro ychako.</p>
+<p>Examples:</p>
+<ul>
+<li>Sudden IP change</li>
+<li>Different Country</li>
+<li>Different Browser</li>
+<li>Impossible Travel</li>
+<li>Unusual Activity</li>
+<li>Multiple Active Sessions</li>
+</ul>
+<p>hadchi li kikhlihom ydiro <strong>Force Logout</strong> or <strong>Require MFA Again</strong></p>
+<hr>
+<h1 id="Blue-Team-Perspective"><a href="#Blue-Team-Perspective" class="headerlink" title="Blue Team Perspective"></a>Blue Team Perspective</h1><p>Daba 3rfna kifash attacker y9dr ywsl l Session Cookie.</p>
+<p>Walakin… kifash defenders y9dro ys3bo hadchi?</p>
+<p>Session Hijacking ma t9drch tmna3ha 100%, walakin t9dr ts3bha bzf ila kan implementation mzyan.</p>
+<h2 id="Secure-Cookie-Attributes"><a href="#Secure-Cookie-Attributes" class="headerlink" title="Secure Cookie Attributes"></a>Secure Cookie Attributes</h2><p>Cookie khasha tkon mconfigura b had attributes:</p>
+<ul>
+<li><code>HttpOnly</code></li>
+<li><code>Secure</code></li>
+<li><code>SameSite</code></li>
+</ul>
+<h3 id="HttpOnly"><a href="#HttpOnly" class="headerlink" title="HttpOnly"></a>HttpOnly</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Set-Cookie</span><span class="hljs-punctuation">: </span>session=abc123; HttpOnly<br></code></pre></td></tr></table></figure>
+
+<p>Kaymn3 JavaScript mn laccess l Cookie.</p>
+<p>Hadchi kay7mi mn bzaf dial XSS scenarios.</p>
+<hr>
+<h3 id="Secure"><a href="#Secure" class="headerlink" title="Secure"></a>Secure</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Set-Cookie</span><span class="hljs-punctuation">: </span>session=abc123; Secure<br></code></pre></td></tr></table></figure>
+
+<p>Cookie matsiftch ila kan request b HTTP.</p>
+<p>Katsift ghir m3a HTTPS.</p>
+<hr>
+<h3 id="SameSite"><a href="#SameSite" class="headerlink" title="SameSite"></a>SameSite</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Set-Cookie</span><span class="hljs-punctuation">: </span>session=abc123; SameSite=Lax<br></code></pre></td></tr></table></figure>
+
+<p>Kay9ll mn Cross-Site Request Forgery (CSRF) attacks.</p>
+<p>Options:</p>
+<ul>
+<li>Strict</li>
+<li>Lax</li>
+<li>None</li>
+</ul>
+<hr>
+<h1 id="Session-Expiration"><a href="#Session-Expiration" class="headerlink" title="Session Expiration"></a>Session Expiration</h1><p>Session matkhasshach tb9a valid forever.</p>
+<p>Best Practice:</p>
+<ul>
+<li>Short expiration for sensitive accounts(Banks).</li>
+<li>Invalidate Session after logout.</li>
+<li>Rotate Session ID after successful login.</li>
+</ul>
+<hr>
+<h1 id="Session-Rotation"><a href="#Session-Rotation" class="headerlink" title="Session Rotation"></a>Session Rotation</h1><p>Mni user kaydir login successfully…</p>
+<p>Matb9ach tst3ml nafs Session ID.</p>
+<p>Create wa7da jdida.</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs text">Old Session<br>↓<br><br>Destroyed<br><br>↓<br><br>New Random Session ID<br></code></pre></td></tr></table></figure>
+
+<p>Hadchi kay9ll mn Session Fixation attacks.</p>
+<hr>
+<h1 id="Re-Authentication"><a href="#Re-Authentication" class="headerlink" title="Re-Authentication"></a>Re-Authentication</h1><p>Sensitive actions b7al:</p>
+<ul>
+<li>Change Password</li>
+<li>Change Email</li>
+<li>Delete Account</li>
+<li>View Recovery Codes</li>
+</ul>
+<p>Khas ytalbo:</p>
+<ul>
+<li>Password Again</li>
+</ul>
+<p>or</p>
+<ul>
+<li>MFA Again</li>
+</ul>
+<hr>
+<h1 id="Device-Session-Monitoring"><a href="#Device-Session-Monitoring" class="headerlink" title="Device &amp; Session Monitoring"></a>Device &amp; Session Monitoring</h1><p>Modern websites kikhdmo 3la detection dial suspicious activity.</p>
+<p>Examples:</p>
+<ul>
+<li>Impossible Travel</li>
+<li>Sudden Country Change</li>
+<li>Different Browser Fingerprint</li>
+<li>New Device</li>
+<li>ASN Change</li>
+<li>Multiple Active Sessions</li>
+</ul>
+<p>Ila chi haja bant suspicious…</p>
+<p>Website kidir:</p>
+<ul>
+<li>Force Logout</li>
+<li>Invalidate Session</li>
+<li>Require MFA Again</li>
+<li>Notify User</li>
+</ul>
+<hr>
+<h1 id="User-Awareness"><a href="#User-Awareness" class="headerlink" title="User Awareness"></a>User Awareness</h1><p>Nta as a User khask thawl tb3d 3la had lhwayj.</p>
+<p>Avoid:</p>
+<ul>
+<li>Installing random extensions.</li>
+<li>Downloading cracked software.</li>
+<li>Running unknown executables.</li>
+<li>Using HTTP websites.</li>
+<li>Reusing infected browsers.</li>
+</ul>
+<p>Always:</p>
+<ul>
+<li>Enable MFA.</li>
+<li>Logout from shared devices.</li>
+<li>Keep browser updated.</li>
+<li>Review active sessions periodically.</li>
+</ul>
+<hr>
+<h1 id="Final-Thoughts"><a href="#Final-Thoughts" class="headerlink" title="Final Thoughts"></a>Final Thoughts</h1><p>Session Hijacking ma kat3nich attacker khaso y3rf password.</p>
+<p>F bzaf dial cases…</p>
+<p>Session Cookie katkon kafiya bash website y3tabrk authenticated.</p>
+<p>3liha security dial Session management hiya wa7da mn aham l7wayj f ay web application.</p>
+<p>Strong Password, MFA, HTTPS, Secure Cookies, Session Rotation, Detection logic…</p>
+<p>Kamlin kaykhdmo m3a b3dyathom bash ys3bo l7ayat 3la attacker.</p>
+<p>Remember:</p>
+<blockquote>
+<p>Authentication proves <strong>who you are.</strong></p>
+</blockquote>
+<blockquote>
+<p>Session proves <strong>that you’ve already been authenticated.</strong></p>
+</blockquote>
+<p>Ila Session ttsra9…</p>
+<p>Server ma y9drch y3rf wash nta howa l’owner wla attacker, ila makanch kayn detection logic w secure session management.</p>
+<blockquote>
+<p>💡 <strong>Fun Fact</strong></p>
+<p>Bzf dial Infostealer malwares li kaytba3o f dark web ma kaybi3och passwords, kaybi3o <strong>Active Browser Sessions</strong>.</p>
+</blockquote>
+<div id="paginator"></div></div><div id="post-footer"></div></div><div class="bottom-btn"><div><a class="i-top" id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧ </a><a class="i-index" id="to-index" onClick="tocControl.change()" title="To Catalog"><span class="tocBtnIconBar"></span><span class="tocBtnIconBar"></span><span class="tocBtnIconBar"></span></a><a class="i-color" id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/CyberMa/" id="logo"><img src="/img/logo.png" alt="CyberMa" style="margin:0;border-radius:0;"></a><h1 id="Dr"><a href="/">Klasster</a></h1><div id="description">   <p> Coffee Music Attacks ☕</p><p>CyberMa</p></div><div id="social-links"><a class="social" target="_blank" rel="noopener" href="https://github.com/Kl3s"><i class="fab fa-github" alt="GitHub"></i></a></div><div id="music-section"><hr><p>Feeling exhausted? Let's enjoy music!</p><div class="music-image"><img src="/img/music.jpg" width="160" style="border-radius: 4px;"></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-toggle">▶ Play Music</button><button id="music-next">⏭</button></div><p id="music-index">Currently: 1 / 3</p><hr></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Session-Hijacking"><span class="toc-number">1.</span> <span class="toc-text">Session Hijacking</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Introduction"><span class="toc-number">2.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Example"><span class="toc-number">3.</span> <span class="toc-text">Example:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Session-Hijacking-1"><span class="toc-number">4.</span> <span class="toc-text">Session Hijacking</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#But%E2%80%A6How-Can-Cookies-Be-Stolen"><span class="toc-number">5.</span> <span class="toc-text">But…How Can Cookies Be Stolen?</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Stealers"><span class="toc-number">6.</span> <span class="toc-text">Stealers</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Browser-Extensions"><span class="toc-number">7.</span> <span class="toc-text">Browser Extensions:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#XSS"><span class="toc-number">8.</span> <span class="toc-text">XSS</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Session-Replay"><span class="toc-number">9.</span> <span class="toc-text">Session Replay</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MITM"><span class="toc-number">10.</span> <span class="toc-text">MITM</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Detection"><span class="toc-number">11.</span> <span class="toc-text">Detection</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Blue-Team-Perspective"><span class="toc-number">12.</span> <span class="toc-text">Blue Team Perspective</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Secure-Cookie-Attributes"><span class="toc-number">12.1.</span> <span class="toc-text">Secure Cookie Attributes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#HttpOnly"><span class="toc-number">12.1.1.</span> <span class="toc-text">HttpOnly</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Secure"><span class="toc-number">12.1.2.</span> <span class="toc-text">Secure</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SameSite"><span class="toc-number">12.1.3.</span> <span class="toc-text">SameSite</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Session-Expiration"><span class="toc-number">13.</span> <span class="toc-text">Session Expiration</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Session-Rotation"><span class="toc-number">14.</span> <span class="toc-text">Session Rotation</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Re-Authentication"><span class="toc-number">15.</span> <span class="toc-text">Re-Authentication</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Device-Session-Monitoring"><span class="toc-number">16.</span> <span class="toc-text">Device &amp; Session Monitoring</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#User-Awareness"><span class="toc-number">17.</span> <span class="toc-text">User Awareness</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Final-Thoughts"><span class="toc-number">18.</span> <span class="toc-text">Final Thoughts</span></a></li></ol></div></div><footer><nobr>CyberMa by <a href="#">Klasster</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script defer src="/js/music_player.js"></script></body></html>
