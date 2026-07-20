@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   const playlist = [
-    "/audio/music_1.mp3",
-    "/audio/bgm.mp3",
-    "/audio/bgm.mp3"
+    "/CyberMa/audio/music_1.mp3",
+    "/CyberMa/audio/bgm.mp3",
+    "/CyberMa/audio/bgm.mp3"
   ];
 
   let current = 0;
