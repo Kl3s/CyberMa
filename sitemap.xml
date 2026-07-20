@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://kl3s.github.io/2026/07/20/What-s-Network/</loc>
+    
+    <lastmod>2026-07-20</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://kl3s.github.io/2026/07/19/session/</loc>
     
     <lastmod>2026-07-20</lastmod>
@@ -63,10 +72,31 @@
     <priority>0.2</priority>
   </url>
   
+  <url>
+    <loc>https://kl3s.github.io/tags/Networking/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kl3s.github.io/tags/Beginner/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
   
   <url>
     <loc>https://kl3s.github.io/categories/Web-Security/</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kl3s.github.io/categories/Networking/</loc>
     <lastmod>2026-07-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

@@ -1,0 +1,320 @@
+<!DOCTYPE html><html lang="en" theme-mode="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>What is a Computer Network? - Understanding the Foundation | CyberMa</title><meta name="keywords" content="Learning,Networking,Beginner"><meta name="description" content="Learn what a computer network really is, why networks exist, how computers communicate, and the fundamental concepts that every cybersecurity professional should understand.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What is a Computer Network? - Understanding the Foundation">
+<meta property="og:url" content="https://kl3s.github.io/2026/07/20/What-s-Network/index.html">
+<meta property="og:site_name" content="CyberMa">
+<meta property="og:description" content="Learn what a computer network really is, why networks exist, how computers communicate, and the fundamental concepts that every cybersecurity professional should understand.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-07-20T17:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-20T16:57:59.348Z">
+<meta property="article:author" content="Klasster">
+<meta property="article:tag" content="Beginner">
+<meta property="article:tag" content="Learning">
+<meta property="article:tag" content="Networking">
+<meta name="twitter:card" content="summary"><link rel="canonical" href="https://kl3s.github.io/2026/07/20/What-s-Network/"><link rel="icon" type="image/x-icon" href="/CyberMa/favicon.ico"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/Bender.ttf"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/BenderLight.woff2"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/JetBrainsMono-Regular.woff2"><link rel="stylesheet" href="/CyberMa/css/arknights.css"><style>@font-face {
+  font-family: Bender;
+  src: local('Bender'), url("/CyberMa/font/Bender.ttf"), url("/CyberMa/font/Bender.otf");
+}
+@font-face {
+  font-family: BenderLight;
+  src: local('BenderLight'), url("/CyberMa/font/BenderLight.woff2") format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: local('JetBrains Mono'), url('/CyberMa/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+</style><meta name="page-config" content="{&quot;code_fold&quot;:null}"><script class="pjax-js">var config = {"root":"/CyberMa/","code_fold":15,"search":{"preload":false,"activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy"}};
+var page_config = {
+  code_fold: null
+};
+function updatePageConfig() {
+  var newPageConfig = document.querySelector('meta[name="page-config"]');
+  if (newPageConfig) {
+    page_config = JSON.parse(newPageConfig.content);
+  }
+}
+document.addEventListener('pjax:complete', function() { updatePageConfig(); });
+updatePageConfig();</script><link type="text/css" rel="stylesheet" href="/CyberMa/lib/encrypt/hbe.style.css"><script src="//unpkg.com/mermaid@11.12.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/CyberMa/lib/fontawesome/css/all.min.css"><script>if (window.localStorage.getItem('theme-mode') === 'light')
+ document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark')
+ document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/CyberMa/font/BenderLight.woff2") format('woff2');
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/CyberMa/font/JetBrainsMono-Regular.woff2') format('woff2');
+}</style><style>:root {
+ --dark-background: url('https://ak.hypergryph.com/assets/index/images/ak/pc/bk.jpg');
+ --light-background: url('/CyberMa/img/bk.jpg');
+ --theme-encrypt-confirm: 'confirm'
+}</style><script defer src="/CyberMa/js/arknights.js"></script><script defer src="/CyberMa/js/search.js"></script><script defer type="module">import mermaid from '//unpkg.com/mermaid@11.12.2/dist/mermaid.esm.min.mjs';
+window.mermaid = mermaid;
+code.paintMermaid();
+</script><script async src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script async src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script async src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script async src="/CyberMa/lib/encrypt/hbe.js"></script><script async src="/CyberMa/js/pjax.js"></script><script class="pjax-js">reset= () => {document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js','data-pjax','.vercount','meta[name=page-config]'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script><script class="pjax-js">reset= () => {document.querySelector('.lg-container')?.remove()
+const postBg = document.querySelector('#post-bg');
+if (postBg) lightGallery(postBg, {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js','data-pjax','.vercount','meta[name=page-config]'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="loading" style="opacity: 0;"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><div class="navBtn"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><nav><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup" tabindex="0"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/CyberMa/"><span class="navItemTitle">Home</span></a></li><li class="navItem"><a class="navBlock" href="/CyberMa/about/"><span class="navItemTitle">About</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/CyberMa/archives/"><span class="navItemTitle">Archives</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>What is a Computer Network? - Understanding the Foundation</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2026-07-20T17:00:00.000Z" id="date"> 2026-07-20</time></div></span><br><span>Last Update: <div class="control"><time datetime="2026-07-20T16:57:59.348Z" id="updated"> 2026-07-20</time></div></span></div></div><hr><div id="post-content"><h1 id="What-is-a-Network"><a href="#What-is-a-Network" class="headerlink" title="What is a Network?"></a>What is a Network?</h1><blockquote>
+<p><strong>Difficulty:</strong> ⭐☆☆☆☆</p>
+<p><strong>Category:</strong> Networking</p>
+<p><strong>Estimated Reading Time:</strong> 15-20 minutes</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>⚠ <strong>Disclaimer</strong></p>
+<p>Had series darat bach tbni foundation qwiya f Networking mn zero. Ma khassek ta knowledge 9bl ma tbda.</p>
+</blockquote>
+<hr>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Imagine wa7d l3alam fin <strong>kola computer kay3ich bo7do</strong>.</p>
+<p>Laptop dialk ma y9drch ysift file l PC akhor.</p>
+<p>Telephone ma y9drch ykhdm b WhatsApp.</p>
+<p>Browser ma y9drch yfta7 Google.</p>
+<p>Steam ma y9drch yconnecta l servers.</p>
+<p>Online games ma kaynach.</p>
+<p>Cloud storage ma kaynach.</p>
+<p>Emails ma kaynach.</p>
+<p>Streaming ma kaynach.</p>
+<p>Bikhtisar…</p>
+<p><strong>Modern computing kamla ghadi t7bes.</strong></p>
+<p>Hna katban l7aja li smitha <strong>Network</strong>.</p>
+<p>Networking ma hiyach ghir Wi-Fi aw Internet.</p>
+<p>Networking hiya l foundation li katkhali millions dyal devices y9dro yhadro m3a b3dyathom.</p>
+<hr>
+<h1 id="Why-Do-Computer-Networks-Exist"><a href="#Why-Do-Computer-Networks-Exist" class="headerlink" title="Why Do Computer Networks Exist?"></a>Why Do Computer Networks Exist?</h1><p>Qbl ma nsowlo:</p>
+<blockquote>
+<p>“Chno hiya network?”</p>
+</blockquote>
+<p>Khasna nfhmo.</p>
+<blockquote>
+<p><strong>3lach aslan khl9na networks?</strong></p>
+</blockquote>
+<p>Jawab sahl.</p>
+<p>Computer wahad ma 3ndo ta value kbira.</p>
+<p>L9ima katji mlli y9dr ywasel lma3lomat l devices okhrin.</p>
+<p>Imagine:</p>
+<ul>
+<li>Company 3andha 500 employees.</li>
+<li>Kola wa7d 3ando PC.</li>
+<li>Kola PC ma3zol.</li>
+</ul>
+<p>Kifach ghadi ydir share l documents?</p>
+<p>Kifach ghadi ytb3o mn nafs printer?</p>
+<p>Kifach ghadi yst3mlo database wa7da?</p>
+<p>Kifach ghadi ykhdmo m3a b3dyathom?</p>
+<p>Jawab:</p>
+<p>Ma ymknch.</p>
+<p>L7ell howa…</p>
+<p><strong>Network.</strong></p>
+<hr>
+<h1 id="What-is-a-Network-1"><a href="#What-is-a-Network-1" class="headerlink" title="What is a  Network?"></a>What is a  Network?</h1><p>Network hiya:</p>
+<blockquote>
+<p>A group of interconnected devices that communicate and exchange information using agreed communication rules called protocols.</p>
+</blockquote>
+<p>Bdarija b simple:</p>
+<p>Network hiya wa7d lwasila katkhlli juj aw ktar mn devices ytsifto data l b3dyathom.</p>
+<p>Had devices maykounoch ghir computers.</p>
+<p>Y9dro ykono:</p>
+<ul>
+<li>Laptop</li>
+<li>Desktop</li>
+<li>Smartphone</li>
+<li>Server</li>
+<li>Printer</li>
+<li>Smart TV</li>
+<li>Camera</li>
+<li>Router</li>
+<li>IoT Devices</li>
+</ul>
+<p>Kol wa7d mn hadchi y9dr ykoun node f network.</p>
+<hr>
+<h1 id="The-Four-Building-Blocks-of-Every-Network"><a href="#The-Four-Building-Blocks-of-Every-Network" class="headerlink" title="The Four Building Blocks of Every Network"></a>The Four Building Blocks of Every Network</h1><p>Kola network, sghira kant aw kbira, mabniya 3la 4 7wayj.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart LR<br><br>A[Devices]<br><br>B[Connection]<br><br>C[Data]<br><br>D[Protocols]<br><br>A --&gt; E[Network]<br><br>B --&gt; E<br><br>C --&gt; E<br><br>D --&gt; E<br></code></pre></td></tr></table></figure>
+
+<h2 id="1-Devices"><a href="#1-Devices" class="headerlink" title="1. Devices"></a>1. Devices</h2><p>Devices homa li diro communication.</p>
+<p>Examples:</p>
+<ul>
+<li>Computer</li>
+<li>Phone</li>
+<li>Server</li>
+<li>Printer</li>
+</ul>
+<hr>
+<h2 id="2-Connection"><a href="#2-Connection" class="headerlink" title="2. Connection"></a>2. Connection</h2><p>Bash khas had devices ykono mrabtin.</p>
+<p>Bhel :</p>
+<ul>
+<li>Ethernet Cable</li>
+<li>Fiber Optic</li>
+<li>Wi-Fi</li>
+<li>Cellular Network</li>
+</ul>
+<hr>
+<h2 id="3-Data"><a href="#3-Data" class="headerlink" title="3. Data"></a>3. Data</h2><p>Lhadaf howa data.</p>
+<p>Data momkin tkoun:</p>
+<ul>
+<li>Image</li>
+<li>Video</li>
+<li>Password</li>
+<li>PDF</li>
+<li>Email</li>
+<li>Voice</li>
+<li>Game Traffic</li>
+</ul>
+<p>Networking ma katsiftch “Site”.</p>
+<p>Networking katsift <strong>data</strong>.</p>
+<hr>
+<h2 id="4-Protocols"><a href="#4-Protocols" class="headerlink" title="4. Protocols"></a>4. Protocols</h2><p>Imagine juj nass.</p>
+<p>Wa7d kayhdr English.</p>
+<p>Lakhor kayhdr Japanese.</p>
+<p>Ma ghaytfahmoch.</p>
+<p>Computers tahuma  khashom language moshtraka.</p>
+<p>Had language katsma:</p>
+<p><strong>Protocol.</strong></p>
+<p>Protocols homa rules li katnadem communication bin devices.</p>
+<p>Ghadi nt3lmo protocols btafsil mn b3d.</p>
+<hr>
+<h1 id="Network-vs-Internet"><a href="#Network-vs-Internet" class="headerlink" title="Network vs Internet"></a>Network vs Internet</h1><p>Network ≠ Internet.</p>
+<p>Internet howa <strong>network kbira bzaf</strong> katrbat millions dyal networks sghar.</p>
+<p>Diagram:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart TD<br><br>A[Home Network]<br><br>B[School Network]<br><br>C[Company Network]<br><br>D[University Network]<br><br>A --&gt; E((Internet))<br><br>B --&gt; E<br><br>C --&gt; E<br><br>D --&gt; E<br></code></pre></td></tr></table></figure>
+
+<p>Internet ma howach network wa7da.</p>
+<p>Howa network dyal networks.</p>
+<hr>
+<h1 id="Types-of-Communication"><a href="#Types-of-Communication" class="headerlink" title="Types of Communication"></a>Types of Communication</h1><p>Computer y9dr yhdr m3a:</p>
+<ul>
+<li>Computer</li>
+<li>Server</li>
+<li>Phone</li>
+<li>Printer</li>
+<li>Router</li>
+<li>Cloud Service</li>
+</ul>
+<hr>
+<h1 id="Client-and-Server"><a href="#Client-and-Server" class="headerlink" title="Client and Server"></a>Client and Server</h1><p>Hadi whda mn aham concepts.</p>
+<p>Imagine restaurant.</p>
+<p>Customer kaytlb pizza.</p>
+<p>Chef kaywjd pizza.</p>
+<p>Customer &#x3D; Client</p>
+<p>Chef &#x3D; Server</p>
+<p>F networking:</p>
+<p>Browser &#x3D; Client</p>
+<p>Google &#x3D; Server</p>
+<p>Discord &#x3D; Client</p>
+<p>Discord Infrastructure &#x3D; Server</p>
+<p>Steam &#x3D; Client</p>
+<p>Steam Servers &#x3D; Server</p>
+<p>Server kay9dm service.</p>
+<p>Client kaytlbha.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart LR<br><br>Client<br><br>-- Request --&gt;<br><br>Server<br><br>Server<br><br>-- Response --&gt;<br><br>Client<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="Peer-to-Peer-P2P"><a href="#Peer-to-Peer-P2P" class="headerlink" title="Peer-to-Peer (P2P)"></a>Peer-to-Peer (P2P)</h1><p>Machi dima kayn server.</p>
+<p>B3d lmerat juj devices kayhadro m3a b3dyathom direct.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart LR<br><br>A[PC 1]<br>&lt;--&gt;<br>B[PC 2]<br></code></pre></td></tr></table></figure>
+
+<p>Examples:</p>
+<ul>
+<li>Local File Sharing</li>
+<li>BitTorrent</li>
+<li>LAN Games</li>
+</ul>
+<p>Had architecture katsma:</p>
+<p>Peer-to-Peer.</p>
+<hr>
+<h1 id="Real-World-Examples"><a href="#Real-World-Examples" class="headerlink" title="Real World Examples"></a>Real World Examples</h1><h2 id="Home-Network"><a href="#Home-Network" class="headerlink" title="Home Network"></a>Home Network</h2><ul>
+<li>Laptop</li>
+<li>Phone</li>
+<li>TV</li>
+<li>Router</li>
+</ul>
+<p>Kolchi mrbot.</p>
+<hr>
+<h2 id="Company-Network"><a href="#Company-Network" class="headerlink" title="Company Network"></a>Company Network</h2><ul>
+<li>Hundreds of PCs</li>
+<li>Servers</li>
+<li>Printers</li>
+<li>Switches</li>
+<li>Firewalls</li>
+</ul>
+<hr>
+<h2 id="Cloud"><a href="#Cloud" class="headerlink" title="Cloud"></a>Cloud</h2><p>AWS</p>
+<p>Azure</p>
+<p>Google Cloud</p>
+<p>Hta homa f lakher gha networks kbira bzaf.</p>
+<hr>
+<h1 id="Why-Networking-Matters-in-Cybersecurity"><a href="#Why-Networking-Matters-in-Cybersecurity" class="headerlink" title="Why Networking Matters in Cybersecurity"></a>Why Networking Matters in Cybersecurity</h1><p>Networking howa wa7d mn aham foundations f Cybersecurity.</p>
+<p>Attacker khaso yfham:</p>
+<ul>
+<li>Fin katmchi data.</li>
+<li>Kifach katmchi.</li>
+<li>Mnin katmchi.</li>
+<li>Chkon kay9raha.</li>
+</ul>
+<p>Defender khaso yfham nafs l7wayj bach ydir detection l  attacks.</p>
+<p>Bla Base zwen f Networking…</p>
+<p>S3ib tfham:</p>
+<ul>
+<li>Web Security</li>
+<li>Active Directory</li>
+<li>Malware</li>
+<li>C2</li>
+<li>Lateral Movement</li>
+<li>DNS</li>
+<li>Firewalls</li>
+<li>VPN</li>
+<li>Packet Analysis</li>
+<li>Wireshark</li>
+</ul>
+<h1 id="Key-Takeaways"><a href="#Key-Takeaways" class="headerlink" title="Key Takeaways"></a>Key Takeaways</h1><ul>
+<li>Network hiya majmo3a dyal devices mrbotin m3a b3dyathom.</li>
+<li>Lhadaf howa communication.</li>
+<li>Protocols homa lqawanin li kaynademo had communication.</li>
+<li>Internet howa network dyal networks.</li>
+<li>Client kaytlb service.</li>
+<li>Server kay9dm service.</li>
+<li>Peer-to-Peer kaykhlli devices ydiro communication directly.</li>
+</ul>
+<hr>
+<h1 id="Coming-Up-Next"><a href="#Coming-Up-Next" class="headerlink" title="Coming Up Next"></a>Coming Up Next</h1><blockquote>
+<p><strong>How Data Travels Across a Network</strong></p>
+</blockquote>
+<p>Ghadi ntb3o packet wa7da mn browser dialk 7ta twsl l server, step by step.</p>
+<hr>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
+<li>Computer Networking: A Top-Down Approach (Kurose &amp; Ross)</li>
+<li>TCP&#x2F;IP Illustrated, Volume 1 (W. Richard Stevens)</li>
+<li>RFC 1122 – Requirements for Internet Hosts</li>
+<li>Cisco Networking Academy</li>
+<li>Andrew S. Tanenbaum – Computer Networks</li>
+</ul>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages" style="justify-content: flex-end"><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/CyberMa/2026/07/19/session/">Session Hijacking - Understading Cookie-Based Authentication Prev →</a></div></div></div></div><div class="bottom-btn"><div><a class="i-top" id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧ </a><a class="i-index" id="to-index" onClick="tocControl.change()" title="To Catalog"><span class="tocBtnIconBar"></span><span class="tocBtnIconBar"></span><span class="tocBtnIconBar"></span></a><a class="i-color" id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/CyberMa/" id="logo"><img src="/CyberMa/img/logo.png" alt="CyberMa" style="margin:0;border-radius:0;"></a><h1 id="Dr"><a href="/">Klasster</a></h1><div id="description">   <p> Coffee Music Attacks ☕</p><p>CyberMa</p></div><div id="social-links"><a class="social" target="_blank" rel="noopener" href="https://github.com/Kl3s"><i class="fab fa-github" alt="GitHub"></i></a></div><div id="music-section"><hr><p>Feeling exhausted? Let's enjoy music!</p><div class="music-image"><img src="/CyberMa/img/music.jpg" width="160" style="border-radius: 4px;"></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-toggle">▶ Play</button><button id="music-next">⏭</button></div><p id="music-index">Currently: 1 / 3</p><hr></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#What-is-a-Network"><span class="toc-number">1.</span> <span class="toc-text">What is a Network?</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Introduction"><span class="toc-number">2.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-Do-Computer-Networks-Exist"><span class="toc-number">3.</span> <span class="toc-text">Why Do Computer Networks Exist?</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#What-is-a-Network-1"><span class="toc-number">4.</span> <span class="toc-text">What is a  Network?</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#The-Four-Building-Blocks-of-Every-Network"><span class="toc-number">5.</span> <span class="toc-text">The Four Building Blocks of Every Network</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Devices"><span class="toc-number">5.1.</span> <span class="toc-text">1. Devices</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Connection"><span class="toc-number">5.2.</span> <span class="toc-text">2. Connection</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Data"><span class="toc-number">5.3.</span> <span class="toc-text">3. Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Protocols"><span class="toc-number">5.4.</span> <span class="toc-text">4. Protocols</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Network-vs-Internet"><span class="toc-number">6.</span> <span class="toc-text">Network vs Internet</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Types-of-Communication"><span class="toc-number">7.</span> <span class="toc-text">Types of Communication</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Client-and-Server"><span class="toc-number">8.</span> <span class="toc-text">Client and Server</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Peer-to-Peer-P2P"><span class="toc-number">9.</span> <span class="toc-text">Peer-to-Peer (P2P)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Real-World-Examples"><span class="toc-number">10.</span> <span class="toc-text">Real World Examples</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Home-Network"><span class="toc-number">10.1.</span> <span class="toc-text">Home Network</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Company-Network"><span class="toc-number">10.2.</span> <span class="toc-text">Company Network</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cloud"><span class="toc-number">10.3.</span> <span class="toc-text">Cloud</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Why-Networking-Matters-in-Cybersecurity"><span class="toc-number">11.</span> <span class="toc-text">Why Networking Matters in Cybersecurity</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Key-Takeaways"><span class="toc-number">12.</span> <span class="toc-text">Key Takeaways</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Coming-Up-Next"><span class="toc-number">13.</span> <span class="toc-text">Coming Up Next</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number">14.</span> <span class="toc-text">References</span></a></li></ol></div></div><footer><nobr>CyberMa by <a href="#">Klasster</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script defer src="/CyberMa/js/music_player.js"></script></body></html>
