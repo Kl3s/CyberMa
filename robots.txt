@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kl3s.github.io/CyberMa/sitemap.xml
