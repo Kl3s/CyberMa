@@ -1,0 +1,220 @@
+<!DOCTYPE html><html lang="en" theme-mode="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Hack the Hacker - RCE | CyberMa</title><meta name="keywords" content="Malware Analysis Reverse Engineering XWormRat RAT Threat Intelligence OPSEC Red Team Blue Team Research Advanced"><meta name="description" content="A fictional security research scenario showing how a seemingly dangerous malware delivery can become an investigation opportunity when the malware family has known weaknesses.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hack the Hacker - RCE">
+<meta property="og:url" content="https://kl3s.github.io/2026/08/11/Hack-the-Hacker-RCE/index.html">
+<meta property="og:site_name" content="CyberMa">
+<meta property="og:description" content="A fictional security research scenario showing how a seemingly dangerous malware delivery can become an investigation opportunity when the malware family has known weaknesses.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.discordapp.com/attachments/1384998969012125758/1536740658495230004/image.png?ex=6a7c80c4&is=6a7b2f44&hm=7d6ada52ea8ba1de5f2048e640e2304fa0c87a3ed3b5e83f28bb88ea1d53c4bc&">
+<meta property="og:image" content="https://cdn.discordapp.com/attachments/1384998969012125758/1536740850615459871/image.png?ex=6a7c80f2&is=6a7b2f72&hm=bfe6eee887e5e0f2e61df4bcade0a4191eb4e51d9b113d48b1ffa08c3fd2223a&">
+<meta property="og:image" content="https://cdn.discordapp.com/attachments/1384998969012125758/1536742020784070706/image.png?ex=6a7c8209&is=6a7b3089&hm=2ae90b6505919a27eac772dc9631d263766888bcbdc147577532d65a598188df&">
+<meta property="og:image" content="https://cdn.discordapp.com/attachments/1384998969012125758/1536751654949494794/image.png?ex=6a7c8b02&is=6a7b3982&hm=eb18eca0f3e1f2055a3e4f70937792c1f0131ba0f7d12b8ef89358ea4bc72d81&">
+<meta property="og:image" content="https://cdn.discordapp.com/attachments/1384998969012125758/1536758054924591104/content.png?ex=6a7c90f7&is=6a7b3f77&hm=9e1ec512ab9f664bfea4ee8d34c45fc4a503f0c6b46da2161ba286677d9ba037&">
+<meta property="og:image" content="https://cdn.discordapp.com/attachments/1384998969012125758/1536758475114156115/image.png?ex=6a7c915c&is=6a7b3fdc&hm=b0d3ca8fed2986d90cd33723c097346cdddaf69006f25e90acc4a2e61fd7c355&">
+<meta property="og:image" content="https://cdn.discordapp.com/attachments/1384998969012125758/1536762709347930242/image.png?ex=6a7c954d&is=6a7b43cd&hm=0967a0abecfc0c58b9ba664f01d757dd48f30558e7d4d2cb755bb9972243f8f3&">
+<meta property="article:published_time" content="2026-08-11T17:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-11T16:10:11.686Z">
+<meta property="article:author" content="Klasster">
+<meta property="article:tag" content="Malware Analysis Reverse Engineering XWormRat RAT Threat Intelligence OPSEC Red Team Blue Team Research Advanced">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.discordapp.com/attachments/1384998969012125758/1536740658495230004/image.png?ex=6a7c80c4&is=6a7b2f44&hm=7d6ada52ea8ba1de5f2048e640e2304fa0c87a3ed3b5e83f28bb88ea1d53c4bc&"><link rel="canonical" href="https://kl3s.github.io/2026/08/11/Hack-the-Hacker-RCE/"><link rel="icon" type="image/x-icon" href="/CyberMa/favicon.ico"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/Bender.ttf"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/BenderLight.woff2"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/JetBrainsMono-Regular.woff2"><link rel="stylesheet" href="/CyberMa/css/arknights.css"><style>@font-face {
+  font-family: Bender;
+  src: local('Bender'), url("/CyberMa/font/Bender.ttf"), url("/CyberMa/font/Bender.otf");
+}
+@font-face {
+  font-family: BenderLight;
+  src: local('BenderLight'), url("/CyberMa/font/BenderLight.woff2") format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: local('JetBrains Mono'), url('/CyberMa/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+</style><meta name="page-config" content="{&quot;code_fold&quot;:null}"><script class="pjax-js">var config = {"root":"/CyberMa/","code_fold":15,"search":{"preload":false,"activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy"}};
+var page_config = {
+  code_fold: null
+};
+function updatePageConfig() {
+  var newPageConfig = document.querySelector('meta[name="page-config"]');
+  if (newPageConfig) {
+    page_config = JSON.parse(newPageConfig.content);
+  }
+}
+document.addEventListener('pjax:complete', function() { updatePageConfig(); });
+updatePageConfig();</script><link type="text/css" rel="stylesheet" href="/CyberMa/lib/encrypt/hbe.style.css"><script src="//unpkg.com/mermaid@11.12.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/CyberMa/lib/fontawesome/css/all.min.css"><script>if (window.localStorage.getItem('theme-mode') === 'light')
+ document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark')
+ document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/CyberMa/font/BenderLight.woff2") format('woff2');
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/CyberMa/font/JetBrainsMono-Regular.woff2') format('woff2');
+}</style><style>:root {
+ --dark-background: url('https://ak.hypergryph.com/assets/index/images/ak/pc/bk.jpg');
+ --light-background: url('/CyberMa/img/bk.jpg');
+ --theme-encrypt-confirm: 'confirm'
+}</style><script defer src="/CyberMa/js/arknights.js"></script><script defer src="/CyberMa/js/search.js"></script><script defer type="module">import mermaid from '//unpkg.com/mermaid@11.12.2/dist/mermaid.esm.min.mjs';
+window.mermaid = mermaid;
+code.paintMermaid();
+</script><script async src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script async src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script async src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script async src="/CyberMa/lib/encrypt/hbe.js"></script><script async src="/CyberMa/js/pjax.js"></script><script class="pjax-js">reset= () => {document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js','data-pjax','.vercount','meta[name=page-config]'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script><script class="pjax-js">reset= () => {document.querySelector('.lg-container')?.remove()
+const postBg = document.querySelector('#post-bg');
+if (postBg) lightGallery(postBg, {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js','data-pjax','.vercount','meta[name=page-config]'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="loading" style="opacity: 0;"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><div class="navBtn"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><nav><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup" tabindex="0"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/CyberMa/"><span class="navItemTitle">Home</span></a></li><li class="navItem"><a class="navBlock" href="/CyberMa/about/"><span class="navItemTitle">About</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/CyberMa/archives/"><span class="navItemTitle">Archives</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Hack the Hacker - RCE</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2026-08-11T17:00:00.000Z" id="date"> 2026-08-11</time></div></span><br><span>Last Update: <div class="control"><time datetime="2026-08-11T16:10:11.686Z" id="updated"> 2026-08-11</time></div></span></div></div><hr><div id="post-content"><h1 id="Hack-the-Hacker"><a href="#Hack-the-Hacker" class="headerlink" title="Hack the Hacker"></a>Hack the Hacker</h1><blockquote>
+<p><strong>Difficulty:</strong> 🔴🔴🔴🔴⚫</p>
+<p><strong>Category:</strong> Security Research</p>
+<p><strong>Estimated Reading Time:</strong> 20-25 minutes</p>
+<p><strong>Prerequisites:</strong> knti ylh badi ola deja expert had article ghadi ghir yfhmk mashi darori tdir bhalo ms tfhm concept.</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>⚠ <strong>Disclaimer</strong></p>
+<p>Had article educational wakha rah trat lchhel mn script kid bgha ydir feha wa3er.</p>
+<p>L’objectif machi howa nta9mo mn hacker ktr mahuwa nt3lmo wahed concept li 9lil li kihdr 3lih wa huwa hack-back ola Counter-Hacking fen victim kiwli huwa attacker o hacker lwl kiwli victim.</p>
+<ul>
+<li>nfhmou wa7d concept muhim f malware research:</li>
+</ul>
+<p><strong>Mlli attacker kay3tamd 3la malware ma3rouf mital dial lyom huwa XwormRAT, rah kayst3ml code fih assumptions, weaknesses, w parfois vulnerabilities.</strong></p>
+<p>F had scenario, l’expert aydir “revenge hacking” as POC osf .</p>
+<p>Kay7allel malware, kayjme3 evidence, w kayfhem kifash weakness f software t9der t9leb threat model kamel.</p>
+</blockquote>
+<hr>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Db 9bl mndkhol m3akom f l9aseh , aju tkhylo m3aya wahed smito Yassine.<br>Yassine kay3ref chwiya dyal cybersecurity.<br>Kay3ref ykhdm b commands, b tools, b tutorials, w chi malware families.<br>O daba wla kaychouf rasso o kiqol:</p>
+<blockquote>
+<p>“Ana hacker.”</p>
+</blockquote>
+<p>Kaybda y9ad malwares b Tools wajdin bhal RAT.<br>Wa7d nhar, gha  yjreb wa7d Remote Access Trojan RAT family ma3roufa:<br><strong>XWorm.</strong></p>
+<p>kidkhla f pc dialo.<br>kidir leha config</p>
+<div align="center" class='item-img' data-src='https://cdn.discordapp.com/attachments/1384998969012125758/1536740658495230004/image.png?ex=6a7c80c4&is=6a7b2f44&hm=7d6ada52ea8ba1de5f2048e640e2304fa0c87a3ed3b5e83f28bb88ea1d53c4bc&'><img src="https://cdn.discordapp.com/attachments/1384998969012125758/1536740658495230004/image.png?ex=6a7c80c4&is=6a7b2f44&hm=7d6ada52ea8ba1de5f2048e640e2304fa0c87a3ed3b5e83f28bb88ea1d53c4bc&" alt="Hack the Hacker - Cover" >
+</div>
+
+<p>Ki9ad beha payload.</p>
+<div align="center" class='item-img' data-src='https://cdn.discordapp.com/attachments/1384998969012125758/1536740850615459871/image.png?ex=6a7c80f2&is=6a7b2f72&hm=bfe6eee887e5e0f2e61df4bcade0a4191eb4e51d9b113d48b1ffa08c3fd2223a&'><img src="https://cdn.discordapp.com/attachments/1384998969012125758/1536740850615459871/image.png?ex=6a7c80f2&is=6a7b2f72&hm=bfe6eee887e5e0f2e61df4bcade0a4191eb4e51d9b113d48b1ffa08c3fd2223a&" alt="Hack the Hacker - Cover" >
+</div>
+Kisifto lnass.
+Kaystenna connection.
+<div align="center" class='item-img' data-src='https://cdn.discordapp.com/attachments/1384998969012125758/1536742020784070706/image.png?ex=6a7c8209&is=6a7b3089&hm=2ae90b6505919a27eac772dc9631d263766888bcbdc147577532d65a598188df&'><img src="https://cdn.discordapp.com/attachments/1384998969012125758/1536742020784070706/image.png?ex=6a7c8209&is=6a7b3089&hm=2ae90b6505919a27eac772dc9631d263766888bcbdc147577532d65a598188df&" alt="Hack the Hacker - Cover" >
+</div>
+
+<p>F ljiha lkhra kayn wa7d researcher:<br><strong>Adam.</strong></p>
+<p>Adam dwz dik lfatra dial script kids o b3d mn dakchi.<br>Adam kaykhdem f:</p>
+<ul>
+<li>Reverse Engineering</li>
+<li>Malware Analysis</li>
+<li>Network Analysis</li>
+<li>Windows Internals</li>
+<li>Threat Intelligence</li>
+</ul>
+<p>O hna katbda l9issa.</p>
+<hr>
+<h2 id="The-Scenario"><a href="#The-Scenario" class="headerlink" title="The Scenario"></a>The Scenario</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart LR<br>    A[&quot;Script Kiddie&lt;br/&gt;Attacker&quot;]<br>    --&gt;|&quot;Malware Delivery&quot;| B[&quot;Wsal 3and Adam&quot;]<br>    <br>    B --&gt; C[&quot;Malware Analysis&quot;]<br>    <br>    C --&gt; D[&quot;Reverse Engineering&quot;]<br>    <br>    D --&gt; E[&quot;Known Weakness&quot;]<br>    <br>    E --&gt; F[&quot;Infrastructure Exposure&quot;]<br>    <br>    F --&gt; G[&quot;Evidence + Detection&quot;]<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="Part-1-The-Script-Kiddie"><a href="#Part-1-The-Script-Kiddie" class="headerlink" title="Part 1 - The Script Kiddie"></a>Part 1 - The Script Kiddie</h2><p>Yasine wakha 3ndo chwia m3a cyber . ms mashi flevel dial yktb malware mn zero.<br>Ymkn m3arfsh Windows Internals, PE format….</p>
+<p>Walakin 3nd Balo:</p>
+<blockquote>
+<p>“Kn3rf Nkhdm b tools wajdin , ana hacker.”</p>
+</blockquote>
+<p> Hadi wa7da mn akhyab lhwayj li t9dr tdir o nta ylh badi ! wahm lma3rifa.</p>
+<p>Kayn Far9 maben <strong>Using a tool ≠ Understanding it</strong> , Mashi knqolk mtkhdmch btools no . kamlen khdma o knkhdmo behum . <strong>Trap</strong> Kayn f anak tkhdm b Tool o mfahmch o m3aarfch chno kdir om3arfsh kifash t9dr t9adha.</p>
+<hr>
+<h2 id="Part2-Yassine-O-Xworm"><a href="#Part2-Yassine-O-Xworm" class="headerlink" title="Part2 - Yassine O Xworm"></a>Part2 - Yassine O Xworm</h2><p>Yassine Kan kikhdm b Xworm mn POV Dialo lhayat sahla:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Create Payload<br>      ↓<br>Send Payload<br>      ↓<br>Wait for Connection<br>      ↓<br>Control Victim<br></code></pre></td></tr></table></figure>
+
+<p>Ms Adam kaychuf haja khra:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Sample<br>  ↓<br>Static Analysis<br>  ↓<br>Configuration<br>  ↓<br>Network Behavior<br>  ↓<br>Protocol<br>  ↓<br>C2 Architecture<br>  ↓<br>Implementation Weaknesses<br></code></pre></td></tr></table></figure>
+
+<p>o hna ban lina lfar9 maben <strong>RAT User</strong> w <strong>Real Malware researcher</strong></p>
+<hr>
+<h2 id="Part-3-Yassine-o-Adam"><a href="#Part-3-Yassine-o-Adam" class="headerlink" title="Part 3 - Yassine o Adam"></a>Part 3 - Yassine o Adam</h2><p>Hna Yassine kifma dema kisift lnas f discord kiqolihom had program ki3tik free nitro (as a script kid hadchi li kntw93 ghadi ydir ola ayqolihom free cheat lol) ms had lmra khtar victim lghalat . Adam wslo lmsg feh link dial Dak free nitro o dar had dialog maben Adam o Yassine : </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Adam: 3ndak ykon feh chi virus knkhaf 3la lpc diali<br>  <br>Yassine: No wlh mtkhaf <br>  <br>Adam: Ok ana ankhdmo <br><br></code></pre></td></tr></table></figure>
+<p>Hna Adam mcha khdm VM o dkhl dak Xclient.exe<br>o 9bel mydir leh run mcha ftah Dnspy o dar wahed static analyse khfif</p>
+<div align="center" class='item-img' data-src='https://cdn.discordapp.com/attachments/1384998969012125758/1536751654949494794/image.png?ex=6a7c8b02&is=6a7b3982&hm=eb18eca0f3e1f2055a3e4f70937792c1f0131ba0f7d12b8ef89358ea4bc72d81&'><img src="https://cdn.discordapp.com/attachments/1384998969012125758/1536751654949494794/image.png?ex=6a7c8b02&is=6a7b3982&hm=eb18eca0f3e1f2055a3e4f70937792c1f0131ba0f7d12b8ef89358ea4bc72d81&" alt="Hack the Hacker - Cover" >
+</div>
+
+<p>o kifma ktchufu f image idk nta&#x2F;nti li kt9ra db chno level dialk f cyber ola RE ms ghir bhad screenshot an9dro nchufu wahed red flags:<br>    -<strong>HOSTS</strong><br>    -<strong>PORT</strong><br>    -<strong>Sleep</strong><br>    -<strong>Key</strong><br>bnisba lnas li ylh badyen fhado settings kikono mchhorin dial RAT AsyncRAT xWorm o bzaf dial l3a2ilat.<br>donc awel haja dar Adam db hia yhawl ydir decryption l had settings o b3d 30 min li kan kifhm feha functions dial encryption 9dar yl9ahom </p>
+<div align="center" class='item-img' data-src='https://cdn.discordapp.com/attachments/1384998969012125758/1536758054924591104/content.png?ex=6a7c90f7&is=6a7b3f77&hm=9e1ec512ab9f664bfea4ee8d34c45fc4a503f0c6b46da2161ba286677d9ba037&'><img src="https://cdn.discordapp.com/attachments/1384998969012125758/1536758054924591104/content.png?ex=6a7c90f7&is=6a7b3f77&hm=9e1ec512ab9f664bfea4ee8d34c45fc4a503f0c6b46da2161ba286677d9ba037&" alt="Hack the Hacker - Cover" >
+</div>
+
+<blockquote>
+<p>o 3rf bli rah khdam b Xworm trojan</p>
+</blockquote>
+<div align="center" class='item-img' data-src='https://cdn.discordapp.com/attachments/1384998969012125758/1536758475114156115/image.png?ex=6a7c915c&is=6a7b3fdc&hm=b0d3ca8fed2986d90cd33723c097346cdddaf69006f25e90acc4a2e61fd7c355&'><img src="https://cdn.discordapp.com/attachments/1384998969012125758/1536758475114156115/image.png?ex=6a7c915c&is=6a7b3fdc&hm=b0d3ca8fed2986d90cd33723c097346cdddaf69006f25e90acc4a2e61fd7c355&" alt="Hack the Hacker - Cover" >
+</div>
+
+<hr>
+<h2 id="Part-4-—-The-Important-Discovery"><a href="#Part-4-—-The-Important-Discovery" class="headerlink" title="Part 4 — The Important Discovery"></a>Part 4 — The Important Discovery</h2><p>Adam deja kan 3arf wahed weakness mertabta b XwormRAT, Mghadich n3ti les details dial Exploit ms ghadi nchrah lekom process dialha: </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart LR<br><br>    subgraph Y[&quot;YASSINE — Victim PC&quot;]<br>        Y1[&quot;XWorm RAT&quot;]<br>        Y2[&quot;Listening Port&lt;br/&gt;4444&quot;]<br>        Y3[&quot;Yassine&#x27;s Files&quot;]<br>        <br>        Y1 --&gt; Y2<br>    end<br><br>    subgraph A[&quot;ADAM — Attacker PC&quot;]<br>        A1[&quot;Exploit.exe&quot;]<br>        A2[&quot;Connection&quot;]<br>        A3[&quot;Backdoor&quot;]<br>    end<br><br>    A1 --&gt;|&quot;Targets Yassine&quot;| Y2<br>    Y2 --&gt;|&quot;Connection established&quot;| A2<br>    A2 --&gt;|&quot;Backdoor upload&quot;| A3<br><br>    A3 -.-&gt;|&quot;Remote access&quot;| Y1<br></code></pre></td></tr></table></figure>
+<p>o hna 9dr Adam ywsl lpc dial Yassine b 0 interaction mno R</p>
+<div align="center" class='item-img' data-src='https://cdn.discordapp.com/attachments/1384998969012125758/1536762709347930242/image.png?ex=6a7c954d&is=6a7b43cd&hm=0967a0abecfc0c58b9ba664f01d757dd48f30558e7d4d2cb755bb9972243f8f3&'><img src="https://cdn.discordapp.com/attachments/1384998969012125758/1536762709347930242/image.png?ex=6a7c954d&is=6a7b43cd&hm=0967a0abecfc0c58b9ba664f01d757dd48f30558e7d4d2cb755bb9972243f8f3&" alt="Hack the Hacker - Cover" >
+</div>
+
+<hr>
+<h3 id="Part-5-Simple-Mental"><a href="#Part-5-Simple-Mental" class="headerlink" title="Part 5 - Simple Mental"></a>Part 5 - Simple Mental</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">%%&#123;init: &#123;<br>  &quot;theme&quot;:&quot;base&quot;,<br>  &quot;themeVariables&quot;:&#123;<br>    &quot;primaryColor&quot;:&quot;transparent&quot;,<br>    &quot;primaryBorderColor&quot;:&quot;#64d2ff&quot;,<br>    &quot;primaryTextColor&quot;:&quot;#e8e8e8&quot;,<br>    &quot;lineColor&quot;:&quot;#64d2ff&quot;,<br>    &quot;textColor&quot;:&quot;#e8e8e8&quot;,<br>    &quot;mainBkg&quot;:&quot;transparent&quot;,<br>    &quot;nodeBorder&quot;:&quot;#64d2ff&quot;<br>  &#125;<br>&#125;&#125;%%<br>flowchart TD<br>    A[Trust Something You Didn&#x27;t Build] --&gt; B&#123;Do You Understand It?&#125;<br>    B --&gt;|No| C[Blind Assumption]<br>    B --&gt;|Yes| D[Informed Trust]<br>    C --&gt; E[Hidden Attack Surface]<br>    D --&gt; F[Known, Managed Risk]<br></code></pre></td></tr></table></figure>
+
+<p>Researcher ma kayhtajch ykoun nadi 3la  attacker f kolchi. Kayhtaj ghir yfhem:</p>
+<blockquote>
+<p>Fin trust boundaries d3af?</p>
+</blockquote>
+<hr>
+<h2 id="Part-6-—-The-OPSEC-Problem"><a href="#Part-6-—-The-OPSEC-Problem" class="headerlink" title="Part 6 — The OPSEC Problem"></a>Part 6 — The OPSEC Problem</h2><p>Yassine dar wa7d lghalat li classique. Howa rakkaz  3la victim. Walakin ma fkerch f infrastructure dyalo.</p>
+<p>Attacker y9der ykoun careful f victim side… walakin aghlab attackers li ylh badyen kinsaw :</p>
+<ul>
+<li>C2 exposure</li>
+<li>reused infrastructure</li>
+<li>predictable identifiers</li>
+<li>leaked configuration</li>
+<li>server metadata</li>
+<li>operational fingerprints</li>
+<li>malware fingerprints</li>
+</ul>
+<p>Hadchi kamel y9der y3awn researchers yebniw:</p>
+<blockquote>
+<p><strong>Threat Intelligence Profile</strong></p>
+</blockquote>
+<hr>
+<h2 id="Part-7-—-What-The-Script-Kiddie-Actually-Learned"><a href="#Part-7-—-What-The-Script-Kiddie-Actually-Learned" class="headerlink" title="Part 7 — What The Script Kiddie Actually Learned"></a>Part 7 — What The Script Kiddie Actually Learned</h2><p>Yassine kan baghi yhacki lvictim . Walakin howa li thaka o  t3ellem lesson.</p>
+<blockquote>
+<p>Malware is software.</p>
+</blockquote>
+<p>O software 3ndo:</p>
+<ul>
+<li>bugs</li>
+<li>assumptions</li>
+<li>protocols</li>
+<li>implementation details</li>
+<li>attack surface</li>
+</ul>
+<p>3liha hawlo au max tb3do 3la Programs li m3arfinch Source Code dialhom f Cyersec.</p>
+<hr>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages" style="justify-content: flex-end"><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/CyberMa/2026/07/20/What-s-Network/">What is a Computer Network? - Understanding the Foundation Prev →</a></div></div></div></div><div class="bottom-btn"><div><a class="i-top" id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧ </a><a class="i-index" id="to-index" onClick="tocControl.change()" title="To Catalog"><span class="tocBtnIconBar"></span><span class="tocBtnIconBar"></span><span class="tocBtnIconBar"></span></a><a class="i-color" id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/CyberMa/" id="logo"><img src="/CyberMa/img/logo.png" alt="CyberMa" style="margin:0;border-radius:0;"></a><h1 id="Dr"><a href="/">Klasster</a></h1><div id="description">   <p> Coffee Music Attacks ☕</p><p>CyberMa</p></div><div id="social-links"><a class="social" target="_blank" rel="noopener" href="https://github.com/Kl3s"><i class="fab fa-github" alt="GitHub"></i></a></div><div id="music-section"><hr><p>Feeling exhausted? Let's enjoy music!</p><div class="music-image"><img src="/CyberMa/img/music.jpg" width="160" style="border-radius: 4px;"></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-toggle">▶ Play</button><button id="music-next">⏭</button></div><p id="music-index">Currently: 1 / 3</p><hr></div></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Hack-the-Hacker"><span class="toc-number">1.</span> <span class="toc-text">Hack the Hacker</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#The-Scenario"><span class="toc-number">1.2.</span> <span class="toc-text">The Scenario</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-1-The-Script-Kiddie"><span class="toc-number">1.3.</span> <span class="toc-text">Part 1 - The Script Kiddie</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part2-Yassine-O-Xworm"><span class="toc-number">1.4.</span> <span class="toc-text">Part2 - Yassine O Xworm</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-3-Yassine-o-Adam"><span class="toc-number">1.5.</span> <span class="toc-text">Part 3 - Yassine o Adam</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-4-%E2%80%94-The-Important-Discovery"><span class="toc-number">1.6.</span> <span class="toc-text">Part 4 — The Important Discovery</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Part-5-Simple-Mental"><span class="toc-number">1.6.1.</span> <span class="toc-text">Part 5 - Simple Mental</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-6-%E2%80%94-The-OPSEC-Problem"><span class="toc-number">1.7.</span> <span class="toc-text">Part 6 — The OPSEC Problem</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-7-%E2%80%94-What-The-Script-Kiddie-Actually-Learned"><span class="toc-number">1.8.</span> <span class="toc-text">Part 7 — What The Script Kiddie Actually Learned</span></a></li></ol></li></ol></div></div><footer><nobr>CyberMa by <a href="#">Klasster</a></nobr></footer></aside></main><canvas id="canvas-dust"></canvas><script defer src="/CyberMa/js/music_player.js"></script></body></html>
