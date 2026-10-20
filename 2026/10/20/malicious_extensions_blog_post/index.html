@@ -1,0 +1,398 @@
+<!DOCTYPE html><html lang="en-us" theme-mode="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Malicious Browser Extensions: Inside a Real-World Stealer | CyberMa</title><meta name="keywords" content="Malwares Extensions,Malware Extension,Cookies stealers,Session Hijacking,Browser Security,Web Security"><meta name="description" content="Malicious Extensions:Difficulty: 🟡🟡🟡🟡⚪Category: Malware Analysis &#x2F; Web Security &#x2F; Blue TeamEstimated reading time: 25–30 minutesPrerequisites: Basic JavaScript, browser internals (WebExt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Malicious Browser Extensions: Inside a Real-World Stealer">
+<meta property="og:url" content="https://kl3s.github.io/CyberMa/2026/10/20/malicious_extensions_blog_post/index.html">
+<meta property="og:site_name" content="CyberMa">
+<meta property="og:description" content="Malicious Extensions:Difficulty: 🟡🟡🟡🟡⚪Category: Malware Analysis &#x2F; Web Security &#x2F; Blue TeamEstimated reading time: 25–30 minutesPrerequisites: Basic JavaScript, browser internals (WebExt">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-10-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-20T16:00:00.000Z">
+<meta property="article:author" content="Klasster">
+<meta property="article:tag" content="Malwares Extensions">
+<meta property="article:tag" content="Malware Extension">
+<meta property="article:tag" content="Cookies stealers">
+<meta property="article:tag" content="Session Hijacking">
+<meta property="article:tag" content="Browser Security">
+<meta property="article:tag" content="Web Security">
+<meta name="twitter:card" content="summary"><link rel="canonical" href="https://kl3s.github.io/CyberMa/2026/10/20/malicious_extensions_blog_post/"><link rel="icon" type="image/x-icon" href="/CyberMa/favicon.ico"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/Bender.ttf"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/BenderLight.woff2"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/JetBrainsMono-Regular.woff2"><link rel="stylesheet" href="/CyberMa/css/arknights.css"><style>@font-face {
+  font-family: Bender;
+  src: local('Bender'), url("/CyberMa/font/Bender.ttf"), url("/CyberMa/font/Bender.otf");
+}
+@font-face {
+  font-family: BenderLight;
+  src: local('BenderLight'), url("/CyberMa/font/BenderLight.woff2") format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: local('JetBrains Mono'), url('/CyberMa/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+</style><meta name="page-config" content="{&quot;code_fold&quot;:null}"><script class="pjax-js">var config = {"root":"/CyberMa/","code_fold":15,"search":{"preload":false,"activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy"}};
+var page_config = {
+  code_fold: null
+};
+function updatePageConfig() {
+  var newPageConfig = document.querySelector('meta[name="page-config"]');
+  if (newPageConfig) {
+    page_config = JSON.parse(newPageConfig.content);
+  }
+}
+document.addEventListener('pjax:complete', function() { updatePageConfig(); });
+updatePageConfig();</script><link type="text/css" rel="stylesheet" href="/CyberMa/lib/encrypt/hbe.style.css"><script src="//unpkg.com/mermaid@11.12.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/CyberMa/lib/fontawesome/css/all.min.css"><script>if (window.localStorage.getItem('theme-mode') === 'light')
+ document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark')
+ document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/CyberMa/font/BenderLight.woff2") format('woff2');
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/CyberMa/font/JetBrainsMono-Regular.woff2') format('woff2');
+}</style><style>:root {
+ --dark-background: url('https://ak.hypergryph.com/assets/index/images/ak/pc/bk.jpg');
+ --light-background: url('/CyberMa/img/bk.jpg');
+ --theme-encrypt-confirm: 'confirm'
+}</style><script defer src="/CyberMa/js/arknights.js"></script><script defer src="/CyberMa/js/search.js"></script><script defer type="module">import mermaid from '//unpkg.com/mermaid@11.12.2/dist/mermaid.esm.min.mjs';
+window.mermaid = mermaid;
+code.paintMermaid();
+</script><script async src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script async src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script async src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script async src="/CyberMa/lib/encrypt/hbe.js"></script><script async src="/CyberMa/js/pjax.js"></script><script class="pjax-js">reset= () => {document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js','data-pjax','.vercount','meta[name=page-config]'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script><script class="pjax-js">reset= () => {document.querySelector('.lg-container')?.remove()
+const postBg = document.querySelector('#post-bg');
+if (postBg) lightGallery(postBg, {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js','data-pjax','.vercount','meta[name=page-config]'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="loading" style="opacity: 0;"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><div class="navBtn"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><nav><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup" tabindex="0"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/CyberMa/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/CyberMa/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/CyberMa/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Malicious Browser Extensions: Inside a Real-World Stealer</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2026-10-20T16:00:00.000Z" id="date"> 2026-10-20</time></div></span><br><span>Last Update: <div class="control"><time datetime="2026-10-20T16:00:00.000Z" id="updated"> 2026-10-20</time></div></span></div></div><hr><div id="post-content"><h1 id="Malicious-Extensions"><a href="#Malicious-Extensions" class="headerlink" title="Malicious Extensions:"></a>Malicious Extensions:</h1><p><strong>Difficulty:</strong> 🟡🟡🟡🟡⚪<br><strong>Category:</strong> Malware Analysis &#x2F; Web Security &#x2F; Blue Team<br><strong>Estimated reading time:</strong> 25–30 minutes<br><strong>Prerequisites:</strong> Basic JavaScript, browser internals (WebExtensions API), Web Security fundamentals.</p>
+<blockquote>
+<p>⚠ <strong>Disclaimer</strong><br>Had l’article educational w defensive-focused. Ga3 snippets kano conceptual w sanitized: ma kayn 7ta C2 endpoint, 7ta payload deployable, w 7ta build kit. L-objectif howa: tfhem kifach kaykhdmo stealer extensions, kifach t analizihom b yeddik, w kifach t detectihom — bash t7mi rasek w t7mi lusers dyalek.</p>
+</blockquote>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Bzaf d nass kayti9o f browser extensions hit kidno anaaha “safe” ghir 7it mwjoudin f Browser Web Store. Walakin f lwa9e3, extension wa7da m3a high-risk permissions (<code>cookies</code>, <code>scripting</code>, <code>&lt;all_urls&gt;</code>) t9der tdirlek full credential theft + session hijacking f ga3 lwebsites li katzourhom — bla ma t7ess b 7ta chi 7aja.</p>
+<p>F had l’article, ghadi ndiro analyze l sample dyal stealer (dismantled, sanitized) mn 3 d zwaya:</p>
+<ul>
+<li><strong>Red Team lens:</strong> architecture w mechanisms dyal l’attack</li>
+<li><strong>Analyst lens:</strong> static analysis, kifach textracti l7a9i9a mn les files</li>
+<li><strong>Blue Team lens:</strong> detection rules, IOCs, w hardening</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart LR<br>    A[&quot;User Installs Extension&quot;] --&gt; B[&quot;Grants High-Risk Permissions&quot;]<br>    B --&gt; C[&quot;Content Script Injected into All Pages&quot;]<br>    C --&gt; D[&quot;Captures Logins via DOM Events&quot;]<br>    D --&gt; E[&quot;Background SW Reads All Cookies (incl. HttpOnly)&quot;]<br>    E --&gt; F[&quot;Exfiltrates to Attacker C2&quot;]<br>    F --&gt; G[&quot;Account Compromise&quot;]<br></code></pre></td></tr></table></figure>
+
+<h2 id="Part-1-—-Anatomy-of-a-Malicious-Extension"><a href="#Part-1-—-Anatomy-of-a-Malicious-Extension" class="headerlink" title="Part 1 — Anatomy of a Malicious Extension"></a>Part 1 — Anatomy of a Malicious Extension</h2><p>Extension MV3 (Manifest V3) katbna 3la joj components asasiyin:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart TD<br>    subgraph Extension Context<br>        M[&quot;manifest.json&lt;br/&gt;Requests Permissions&quot;] --&gt; CS[&quot;content.js&lt;br/&gt;Runs in page DOM context&quot;]<br>        M --&gt; BS[&quot;background.js&lt;br/&gt;Service Worker: network + chrome.* APIs&quot;]<br>    end<br>    CS --&gt;|&quot;chrome.runtime.sendMessage&quot;| BS<br>    BS --&gt;|&quot;HTTP POST (often disguised)&quot;| C2[&quot;Attacker C2 / Webhook&quot;]<br></code></pre></td></tr></table></figure>
+
+<p>3lach had l’architecture ?:</p>
+<ul>
+<li><code>content.js</code> kaykoun <strong>ghadi</strong> f DOM dyal lpage nafsha — kaychouf ay input, ay form, ay click.</li>
+<li><code>background.js</code> (service worker) 3endo access l <code>chrome.cookies</code>, <code>chrome.scripting</code>, <code>fetch</code> — bla l9oyod likidir (CSP) li 3end l-page.</li>
+<li>Message passing (<code>chrome.runtime</code>) howa lkhit li krabt ljoj: content kaycapturi, background kaysift.</li>
+</ul>
+<blockquote>
+<p>🔴 <strong>Key insight:</strong> MV3 “safety features” (service workers, event pages) ma kaywa9fouch stealers — ghir kaymn3o lbackground scripts li khddamin 24&#x2F;24. Stealer kaykhdem eventdriven (ghir mlli tsra chi 7aja), w hadchi kafi w khfif bezzaf.</p>
+</blockquote>
+<h2 id="Part-2-—-The-Sample-“Font-Helper”"><a href="#Part-2-—-The-Sample-“Font-Helper”" class="headerlink" title="Part 2 — The Sample: “Font Helper”"></a>Part 2 — The Sample: “Font Helper”</h2><p>Ha sample li ghadi ndiro lih analyse(sanitized),files  mn CRX package.</p>
+<h3 id="2-1-manifest-json-—-LMask"><a href="#2-1-manifest-json-—-LMask" class="headerlink" title="2.1 manifest.json — LMask"></a>2.1 <code>manifest.json</code> — LMask</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;manifest_version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Font Helper&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1.2.3&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Improves font rendering on reading sites.&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;permissions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;cookies&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;scripting&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;storage&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;tabs&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;host_permissions&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;&lt;all_urls&gt;&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;https://discord.com/*&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;background&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;service_worker&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;background.js&quot;</span> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;content_scripts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;matches&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;&lt;all_urls&gt;&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;js&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;content.js&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;run_at&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;document_idle&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;all_frames&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>Reading dyal l analyst — kol permission 3endha double sens:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Legit use</th>
+<th>Malicious use hna</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>permissions: cookies</code></td>
+<td>Password managers, SSO</td>
+<td>Dump dyal ga3 cookies, 7ta <code>HttpOnly</code></td>
+</tr>
+<tr>
+<td><code>permissions: scripting</code></td>
+<td>Extensions b active injection</td>
+<td>Inject credential-grabbers f ay page</td>
+</tr>
+<tr>
+<td><code>host_permissions: &lt;all_urls&gt;</code></td>
+<td>Adblockers, translators</td>
+<td>Surveillance 3la kol site</td>
+</tr>
+<tr>
+<td><code>host_permissions: discord.com/*</code></td>
+<td>ma 3endha 7ta sbab</td>
+<td>C2 channel (webhook)</td>
+</tr>
+<tr>
+<td><code>all_frames: true</code></td>
+<td>Extensions dyal iframes (video, ads)</td>
+<td>Capture login forms f iframes (SSO widgets, 2FA)</td>
+</tr>
+<tr>
+<td><code>run_at: document_idle</code></td>
+<td>Performance</td>
+<td>Stealth: kayinjecti mn b3d, a9al remarquage f dev tools</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>🟡 <strong>Red flag #1:</strong> Extension “dyal fonts” ma 3endha 7ta 3la9a b <code>cookies</code> + <code>&lt;all_urls&gt;</code> + <code>scripting</code> + Discord. <strong>Functionality ≠ Permissions.</strong> Had lfarq howa lmo2achir lwl.</p>
+</blockquote>
+<h3 id="2-2-content-js-—-Credential-Harvester-Conceptual"><a href="#2-2-content-js-—-Credential-Harvester-Conceptual" class="headerlink" title="2.2 content.js — Credential Harvester (Conceptual)"></a>2.2 <code>content.js</code> — Credential Harvester (Conceptual)</h3><p>Content script kaydir listen l 3 event types 3la form elements:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// SANITIZED — Conceptual snippet:</span><br><span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;submit&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">if</span> (e.<span class="hljs-property">target</span>?.<span class="hljs-property">querySelector</span>?.(<span class="hljs-string">&#x27;input[type=&quot;password&quot;], input[type=password]&#x27;</span>)) &#123;<br>    <span class="hljs-title function_">trigger</span>(<span class="hljs-string">&#x27;form-submit&#x27;</span>);   <span class="hljs-comment">// most reliable: user clicked &quot;Sign In&quot;</span><br>  &#125;<br>&#125;, <span class="hljs-literal">true</span>);<br><br><span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;keydown&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">if</span> (e.<span class="hljs-property">key</span> === <span class="hljs-string">&#x27;Enter&#x27;</span> &amp;&amp; <span class="hljs-title function_">hasFilledPasswordField</span>()) &#123;<br>    <span class="hljs-title function_">trigger</span>(<span class="hljs-string">&#x27;enter-key&#x27;</span>);     <span class="hljs-comment">// SPA logins bla &lt;form&gt; element</span><br>  &#125;<br>&#125;, <span class="hljs-literal">true</span>);<br><br><span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;blur&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">if</span> (e.<span class="hljs-property">target</span>?.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;password&#x27;</span> &amp;&amp; e.<span class="hljs-property">target</span>.<span class="hljs-property">value</span>) &#123;<br>    <span class="hljs-title function_">trigger</span>(<span class="hljs-string">&#x27;login-filled&#x27;</span>);  <span class="hljs-comment">// autofill / password manager filled</span><br>  &#125;<br>&#125;, <span class="hljs-literal">true</span>);<br></code></pre></td></tr></table></figure>
+<p>3 triggers &#x3D; 3 toro9 bash ybypassi lformes mkhtalfin:</p>
+<ul>
+<li><strong>submit</strong> → login forms traditionnels</li>
+<li><strong>Enter key</strong> → login modernes f SPA (React&#x2F;Vue) li ma kayst3mlouch <code>&lt;form&gt;</code></li>
+<li><strong>blur</strong> → password managers kaydiro autofill, user ma kayclikich 7ta 3la “Login” — value kaydar leha capture direct mn DOM</li>
+</ul>
+<p><strong>Username association heuristics</strong> (mn sample):</p>
+<p>Lscraper ma kaykhdemch ghir 3la <code>input[type=password]</code> — kaydwi 3la username field b heuristics:</p>
+<ol>
+<li>Sibling dyal password f nafs <code>&lt;form&gt;</code> (text&#x2F;email field fih “user”&#x2F;“email”)</li>
+<li><code>&lt;label&gt;</code> text fih “user”&#x2F;“login” → jump l input l’associé via <code>label.htmlFor</code></li>
+<li>Fallback: awel text&#x2F;email input f lpage — hadi katcatchi old-school login pages bla structure</li>
+</ol>
+<blockquote>
+<p>🔵 <strong>Detection lesson:</strong> heuristics bhal hadi kaybanio <strong>fingerprint</strong>: extension li kat3ayet <code>label.htmlFor</code> + <code>closest(&#39;form&#39;)</code> + sibling scan mashi pattern dyal extension 3adiya. Yara&#x2F;regex rules (Part 5) kay9dro ychado had lpattern.</p>
+</blockquote>
+<h3 id="2-3-background-js-—-Relay-Exfiltration"><a href="#2-3-background-js-—-Relay-Exfiltration" class="headerlink" title="2.3 background.js — Relay &amp; Exfiltration"></a>2.3 <code>background.js</code> — Relay &amp; Exfiltration</h3><p>Service worker kay receive l message mn content script w kaydir l exfiltration:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// SANITIZED — Conceptual: message handling + flow</span><br>chrome.<span class="hljs-property">runtime</span>.<span class="hljs-property">onMessage</span>.<span class="hljs-title function_">addListener</span>(<span class="hljs-function">(<span class="hljs-params">msg, sender, sendResponse</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">if</span> (msg &amp;&amp; sender.<span class="hljs-property">tab</span>) &#123;<br>    <span class="hljs-title function_">exfil</span>(sender.<span class="hljs-property">tab</span>.<span class="hljs-property">id</span>, msg.<span class="hljs-property">type</span>, msg.<span class="hljs-property">force</span>).<span class="hljs-title function_">catch</span>(<span class="hljs-function">() =&gt;</span> &#123;&#125;);<br>    <span class="hljs-title function_">sendResponse</span>(&#123; <span class="hljs-attr">ok</span>: <span class="hljs-literal">true</span> &#125;);<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;   <span class="hljs-comment">// async response</span><br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>L<code>exfil()</code> orchestration kat-dwi 3la 3 khtawat (conceptual):</p>
+<ol>
+<li><strong>Collect</strong> f parallel: dump dyal cookies (mn ga3 cookie stores) + credentials (via <code>chrome.scripting.executeScript</code> f tab)</li>
+<li><strong>Encode:</strong> cookies JSON → encrypted blob (AES-GCM + PBKDF2, 100k iterations) — technique dyal anti-egress-inspection (proxies&#x2F;MDM ma kayqdrouch y9ro content)</li>
+<li><strong>Send:</strong> multipart POST l C2 — text f body, encrypted cookie file f attachment</li>
+</ol>
+<blockquote>
+<p>🔴 <strong>Key takeaway:</strong> encryption dyal payload mashi bash t7mi lvictim — howa bash yshawwesh 3la defensive controls. L analyst khaso y3ref bli encrypted exfil &#x3D; indicator brasso.</p>
+</blockquote>
+<h2 id="Part-3-—-How-Extensions-Bypass-HttpOnly-Cookies"><a href="#Part-3-—-How-Extensions-Bypass-HttpOnly-Cookies" class="headerlink" title="Part 3 — How Extensions Bypass HttpOnly Cookies"></a>Part 3 — How Extensions Bypass <code>HttpOnly</code> Cookies</h2><p>Hadi hiya l “crown jewel” dyal had sample, w hiya li bzaf d nass ma kayt3rfouhach:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">sequenceDiagram<br>    autonumber<br>    actor User<br>    participant Browser<br>    participant Ext as Extension (Background SW)<br>    participant C2 as Attacker<br><br>    User-&gt;&gt;Browser: Login (Set-Cookie: HttpOnly; Secure)<br>    Note over Browser: document.cookie CANNOT read HttpOnly<br>    Ext-&gt;&gt;Browser: chrome.cookies.getAllCookieStores()<br>    Ext-&gt;&gt;Browser: chrome.cookies.getAll(&#123;storeId&#125;)<br>    Browser--&gt;&gt;Ext: ALL cookies incl. HttpOnly + Secure<br>    Ext-&gt;&gt;C2: Session tokens exfiltrated<br></code></pre></td></tr></table></figure>
+
+<p>3lach katkhdem ? :</p>
+<ul>
+<li><code>HttpOnly</code> kat7mi ghir <strong>mn <code>document.cookie</code></strong> (JS li f lpage).</li>
+<li><code>chrome.cookies</code> API katkhdem f privilege level dyal lbrowser nafso, mashi f privilege level dyal lpage — hiya lbrowser li 3atik lcookies, mashi JS dyal lpage.</li>
+<li>B <code>host_permissions: &lt;all_urls&gt;</code>, had l API kat3ti ga3 cookies dyal ga3 domains.</li>
+</ul>
+<p><strong>Impact practical:</strong> session tokens dyal GitHub, AWS, Discord, w cookies dyal Google — l attacker mkhda ta password, but ghir y7ot lcookies f browser dyalo w ydkhol m3lina ana 3yet rah kayen Post 3la hadchi.</p>
+<h2 id="Part-4-—-Anti-Analysis-Techniques-in-the-Sample"><a href="#Part-4-—-Anti-Analysis-Techniques-in-the-Sample" class="headerlink" title="Part 4 — Anti-Analysis Techniques in the Sample"></a>Part 4 — Anti-Analysis Techniques in the Sample</h2><table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>F sample</th>
+<th>3lach kaydirha</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Benign name&#x2F;desc</td>
+<td>“Font Helper” v1.2.3</td>
+<td>Social engineering —  for user and reviewer</td>
+</tr>
+<tr>
+<td>Legit-looking version</td>
+<td>1.2.3 (mashi 0.0.1)</td>
+<td>Kayban product mature, tested</td>
+</tr>
+<tr>
+<td>Encryption dyal payload</td>
+<td>AES-GCM + PBKDF2 100k</td>
+<td>Bypass egress inspection &#x2F; SSL inspection</td>
+</tr>
+<tr>
+<td>File-based exfil</td>
+<td>Cookies f <code>.enc</code> attachment</td>
+<td>DLP regex scanning dyal text body</td>
+</tr>
+<tr>
+<td>Cooldown timer</td>
+<td>30s bin exfils</td>
+<td>Kay9ll rate-limit triggers, a9l noise f logs</td>
+</tr>
+<tr>
+<td>Skip-list dyal cookies</td>
+<td>Analytics&#x2F;ad domains mfiltrin</td>
+<td>Kay9ll size dyal payload, focus 3la session cookies li muhimmin</td>
+</tr>
+<tr>
+<td>Min value length check</td>
+<td><code>c.value.length &lt; 3</code> skip</td>
+<td>Filter dyal noise&#x2F;junk cookies</td>
+</tr>
+<tr>
+<td>Event-driven architecture</td>
+<td>MV3 service worker</td>
+<td>Ma kaynch persistent process → a9l visibilite f task manager</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>🔵 <strong>Note for defenders:</strong> kol technique hna hiya nafsha indicator mn jiha okhra. Extension m3a encrypted exfil + architecture event-driven &#x3D; red-flag pattern li t9der tdirlo rule.</p>
+</blockquote>
+<h2 id="Part-5-—-Static-Analysis-Manual-Triage-Walkthrough"><a href="#Part-5-—-Static-Analysis-Manual-Triage-Walkthrough" class="headerlink" title="Part 5 — Static Analysis: Manual Triage Walkthrough"></a>Part 5 — Static Analysis: Manual Triage Walkthrough</h2><p>Hadi l methodology li tst3melha saraha for me just use zero-trust mindset o mtkhdmch b chi extension mashi opensource (mki3nich rah khask ti9 f opensource hada mwdo3 akhur ta nhdr 3lih mn b3d).</p>
+<h3 id="Step-1-Unpack-the-CRX"><a href="#Step-1-Unpack-the-CRX" class="headerlink" title="Step 1: Unpack the CRX"></a>Step 1: Unpack the CRX</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># Chrome extensions live here (Linux)</span><br><span class="hljs-built_in">ls</span> ~/.config/google-chrome/Default/Extensions/<br><br><span class="hljs-comment"># Unpack CRX (it&#x27;s just a zip with a signature header)</span><br>unzip extension.crx -d ext_unpacked/<br><span class="hljs-comment"># OR use a dedicated extractor tool (drag-and-drop)</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="Step-2-Triage-manifest-json-30-secondes"><a href="#Step-2-Triage-manifest-json-30-secondes" class="headerlink" title="Step 2: Triage manifest.json (30 secondes)"></a>Step 2: Triage <code>manifest.json</code> (30 secondes)</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> ext_unpacked/manifest.json | jq <span class="hljs-string">&#x27;.permissions, .host_permissions, .content_scripts&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Scoring heuristic</strong> (simple walakin effective):</p>
+<table>
+<thead>
+<tr>
+<th>Score</th>
+<th>Condition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>+3</td>
+<td>permission <code>cookies</code></td>
+</tr>
+<tr>
+<td>+3</td>
+<td><code>&lt;all_urls&gt;</code> wla <code>*://*/*</code></td>
+</tr>
+<tr>
+<td>+3</td>
+<td>permission <code>scripting</code></td>
+</tr>
+<tr>
+<td>+2</td>
+<td><code>webRequest</code> &#x2F; <code>webRequestBlocking</code></td>
+</tr>
+<tr>
+<td>+2</td>
+<td><code>all_frames: true</code></td>
+</tr>
+<tr>
+<td>+2</td>
+<td>host permission l platform dyal messaging (discord.com, telegram.org, webhook.site, pastebin)</td>
+</tr>
+<tr>
+<td>−2</td>
+<td>Extension f top-100k users, open source, vendor m3rouf</td>
+</tr>
+</tbody></table>
+<p>Score ≥ 7 → khass manual code review.</p>
+<h3 id="Step-3-Grep-for-Dangerous-API-Patterns"><a href="#Step-3-Grep-for-Dangerous-API-Patterns" class="headerlink" title="Step 3: Grep for Dangerous API Patterns"></a>Step 3: Grep for Dangerous API Patterns</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># Cookie dumping</span><br>grep -rn <span class="hljs-string">&quot;chrome.cookies&quot;</span> ext_unpacked/<br>grep -rn <span class="hljs-string">&quot;getAllCookieStores\|cookies.getAll&quot;</span> ext_unpacked/<br><br><span class="hljs-comment"># Dynamic code execution</span><br>grep -rn <span class="hljs-string">&quot;executeScript\|eval(\|new Function&quot;</span> ext_unpacked/<br><br><span class="hljs-comment"># Exfiltration patterns</span><br>grep -rn <span class="hljs-string">&quot;fetch(\|XMLHttpRequest\|sendBeacon&quot;</span> ext_unpacked/ | grep -v localhost<br><br><span class="hljs-comment"># Obfuscation indicators</span><br>grep -rn <span class="hljs-string">&quot;atob(\|fromCharCode\|String.fromCharCode\|\\\\x[0-9a-f]&#123;2&#125;&quot;</span> ext_unpacked/<br><br><span class="hljs-comment"># Webhook / paste-site exfil channels</span><br>grep -rEn <span class="hljs-string">&quot;discord\.com/api/webhooks|telegram\.org/bot|webhook\.site|pastebin\.com|anonfiles&quot;</span> ext_unpacked/<br></code></pre></td></tr></table></figure>
+
+<h3 id="Step-4-Review-Content-Scripts-Dynamically-safe"><a href="#Step-4-Review-Content-Scripts-Dynamically-safe" class="headerlink" title="Step 4: Review Content Scripts Dynamically (safe)"></a>Step 4: Review Content Scripts Dynamically (safe)</h3><p>Ma tinstallihach b real profile dyalek. Bdlha:</p>
+<ol>
+<li>Load l’extension f fresh Chrome profile m3a <code>--proxy-server=http://127.0.0.1:8080</code> (mitmproxy &#x2F; Burp)</li>
+<li>ser l fake login page (local) b honeypot creds</li>
+<li>Chouf lproxy: chno kaysift POST? lfin? chno l’encoding?</li>
+<li><code>chrome://extensions</code> → “Inspect views: service worker” → console + Network tab</li>
+</ol>
+<blockquote>
+<p>⚠ Dima f VM &#x2F; sandbox. Extension b <code>&lt;all_urls&gt;</code> t9der dir ay 7aja f l-profile dyalek. im just so busy bash ndirha o nhat les etapes step by step ms im sure hadchi kafi lekom :) Inshalah mn b3d o nzido</p>
+</blockquote>
+<h2 id="Part-6-—-Detection-Blue-Team-Playbook"><a href="#Part-6-—-Detection-Blue-Team-Playbook" class="headerlink" title="Part 6 — Detection: Blue Team Playbook"></a>Part 6 — Detection: Blue Team Playbook</h2><h3 id="6-1-Network-Based-Detection"><a href="#6-1-Network-Based-Detection" class="headerlink" title="6.1 Network-Based Detection"></a>6.1 Network-Based Detection</h3><p>L-exfil 3la Discord kaykhrej b patterns distinctifs:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart LR<br>    A[&quot;Browser / extension process&quot;] --&gt;|&quot;POST /api/webhooks/*&quot;| B[&quot;Proxy / Egress&quot;]<br>    B --&gt;|&quot;Detect: multipart + octet-stream attachment&quot;| C[&quot;Alert&quot;]<br>    B --&gt;|&quot;Detect: discord.com from unusual process&quot;| C<br></code></pre></td></tr></table></figure>
+
+<p><strong>Suricata rule</strong> (conceptual — khassek TLS&#x2F;SSL inspection f lproxy dyalek bash tkhdem, 7it lwebhooks ghaliban HTTPS):</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">alert http $HOME_NET any -&gt; $EXTERNAL_NET any (\<br>  msg:&quot;SUSPICIOUS - Discord webhook POST from browser ext&quot;;\<br>  flow:established,to_server; \<br>  http.uri; content:&quot;/api/webhooks/&quot;; startswith;\<br>  http.method; content:&quot;POST&quot;;\<br>  http.header; content:&quot;multipart/form-data&quot;;\<br>  sid:20261001; rev:1;)<br></code></pre></td></tr></table></figure>
+
+<p><strong>Zeek&#x2F;Suricata meta-alerts:</strong></p>
+<ul>
+<li>Browser process → discord.com (b exception dyal legit desktop app)</li>
+<li>POST body fiha <code>multipart/form-data</code> + filename <code>*.enc</code> l host random</li>
+<li>Browser process kaydwi 3la webhook.site, pastebin.com, anonfiles, Telegram bot API</li>
+</ul>
+<h3 id="6-2-Host-Based-Detection"><a href="#6-2-Host-Based-Detection" class="headerlink" title="6.2 Host-Based Detection"></a>6.2 Host-Based Detection</h3><p><strong>Chrome extension audit (PowerShell, Windows):</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-comment"># Enumerate extensions + flag risky permissions</span><br><span class="hljs-variable">$base</span> = <span class="hljs-string">&quot;<span class="hljs-variable">$env:LOCALAPPDATA</span>\Google\Chrome\User Data\*\Extensions\*\*\manifest.json&quot;</span><br><span class="hljs-built_in">Get-ChildItem</span> <span class="hljs-variable">$base</span> | <span class="hljs-built_in">ForEach-Object</span> &#123;<br>    <span class="hljs-variable">$m</span> = <span class="hljs-built_in">Get-Content</span> <span class="hljs-variable">$_</span>.FullName | <span class="hljs-built_in">ConvertFrom-Json</span><br>    <span class="hljs-variable">$risky</span> = <span class="hljs-selector-tag">@</span>(<span class="hljs-string">&#x27;cookies&#x27;</span>,<span class="hljs-string">&#x27;scripting&#x27;</span>,<span class="hljs-string">&#x27;webRequest&#x27;</span>,<span class="hljs-string">&#x27;debugger&#x27;</span>,<span class="hljs-string">&#x27;nativeMessaging&#x27;</span>) |<br>        <span class="hljs-built_in">Where-Object</span> &#123; <span class="hljs-variable">$m</span>.permissions <span class="hljs-operator">-contains</span> <span class="hljs-variable">$_</span> &#125;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$risky</span> <span class="hljs-operator">-or</span> (<span class="hljs-variable">$m</span>.host_permissions <span class="hljs-operator">-contains</span> <span class="hljs-string">&#x27;&lt;all_urls&gt;&#x27;</span>)) &#123;<br>        [<span class="hljs-type">PSCustomObject</span>]<span class="hljs-selector-tag">@</span>&#123;<br>            Name = <span class="hljs-variable">$m</span>.name<br>            Version = <span class="hljs-variable">$m</span>.version<br>            Risky = <span class="hljs-variable">$risky</span> <span class="hljs-operator">-join</span> <span class="hljs-string">&#x27;,&#x27;</span><br>            HostPerms = <span class="hljs-variable">$m</span>.host_permissions <span class="hljs-operator">-join</span> <span class="hljs-string">&#x27;,&#x27;</span><br>            Path = <span class="hljs-variable">$_</span>.DirectoryName<br>        &#125;<br>    &#125;<br>&#125; | <span class="hljs-built_in">Format-Table</span> <span class="hljs-literal">-AutoSize</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Linux equivalent (<code>jq</code>):</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">find ~/.config/google-chrome/*/Extensions -name manifest.json -<span class="hljs-built_in">exec</span> sh -c \<br>  <span class="hljs-string">&#x27;jq -r &quot;select((.permissions // []) | any(. == \&quot;cookies\&quot; or . == \&quot;scripting\&quot;)) | \&quot;\(.name) v\(.version) — RISKY\&quot;&quot; &quot;$1&quot;&#x27;</span> _ &#123;&#125; \;<br></code></pre></td></tr></table></figure>
+
+<p><strong>Enterprise visibility:</strong> <code>chrome://extensions</code> logs local w ma kayfidouch bzaf 3la scale; ahsan option hiya Chrome Enterprise (policy management + reporting), li katdi inventory w alerts 3la install events.</p>
+<h3 id="6-3-YARA-Rule-Conceptual-behavioral"><a href="#6-3-YARA-Rule-Conceptual-behavioral" class="headerlink" title="6.3 YARA Rule (Conceptual, behavioral)"></a>6.3 YARA Rule (Conceptual, behavioral)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs yara">rule Browser_Ext_Stealer_Behavioral<br>&#123;<br>    meta:<br>        author = &quot;defensive-research&quot;<br>        description = &quot;Detects stealer-style logic in unpacked extension JS&quot;<br>        severity = &quot;high&quot;<br>    strings:<br>        $cookies_api = &quot;chrome.cookies.getAll&quot; ascii<br>        $stores      = &quot;getAllCookieStores&quot; ascii<br>        $scripting   = &quot;chrome.scripting.executeScript&quot; ascii<br>        $pw_field    = /input\[type=[&quot;&#x27;]?password[&quot;&#x27;]?\]/ ascii<br>        $webhook_c2  = /discord\.com\/api\/webhooks|webhook\.site|telegram\.org\/bot/ ascii<br>        $enc         = /PBKDF2|AES-GCM|deriveKey/ ascii<br>    condition:<br>        2 of ($cookies_api, $stores, $scripting) and $pw_field and<br>        (1 of ($webhook_c2, $enc))<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>🔵 Had rule lgharad dyalha triage dyal unpacked samples f sandbox&#x2F;lab, mashi scanning f machines live.</p>
+</blockquote>
+<h3 id="6-4-Browser-Level-IOCs"><a href="#6-4-Browser-Level-IOCs" class="headerlink" title="6.4 Browser-Level IOCs"></a>6.4 Browser-Level IOCs</h3><table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Value &#x2F; Pattern</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Permissions combo</td>
+<td><code>cookies</code> + <code>scripting</code> + <code>&lt;all_urls&gt;</code></td>
+</tr>
+<tr>
+<td>Exfil channel</td>
+<td><code>discord.com/api/webhooks/...</code> (mn browser process)</td>
+</tr>
+<tr>
+<td>Attachment name</td>
+<td><code>cookies.enc</code> or some like this, content <code>application/octet-stream</code></td>
+</tr>
+<tr>
+<td>Extension name pattern</td>
+<td>Smiya benign + version ≥1.x + user base sghira</td>
+</tr>
+<tr>
+<td>Behavior</td>
+<td>POST multipart b field <code>payload_json</code> mn browser</td>
+</tr>
+<tr>
+<td>Cookie fields f dump</td>
+<td><code>storeId</code>, <code>domain</code>, <code>name</code>, <code>value</code>, <code>httpOnly</code>, <code>secure</code> (JSON structure)</td>
+</tr>
+</tbody></table>
+<h2 id="Part-7-—-Real-World-Context"><a href="#Part-7-—-Real-World-Context" class="headerlink" title="Part 7 — Real-World Context"></a>Part 7 — Real-World Context</h2><p>Stealer extensions mashi fikra magic. ahsan documented case howa <strong>DataSpii (2019)</strong>: extensions b malayin dyal installations kanou kaycollectiw browsing history w kaybi3oh — legit-looking extensions b backend malicious. Ba3d l campaigns lkhrin (ad blockers, PDF helpers, emoji packs) tkchfo b nafs lpattern: permissions bla rapport m3a lfunction li 3titha extension.</p>
+<h2 id="Part-8-—-Defense-Checklist-User-Enterprise"><a href="#Part-8-—-Defense-Checklist-User-Enterprise" class="headerlink" title="Part 8 — Defense Checklist (User + Enterprise)"></a>Part 8 — Defense Checklist (User + Enterprise)</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs mermaid">flowchart TD<br>    A[Defense Against Malicious Extensions] --&gt; B[&quot;Mostakhdim 3adi&quot;]<br>    A --&gt; C[&quot;Chirka / Enterprise&quot;]<br>    B --&gt; B1[&quot;Audit chrome://extensions kol chhar&quot;]<br>    B --&gt; B2[&quot;Site access: &#x27;On click&#x27; bdl &#x27;On all sites&#x27;&quot;]<br>    B --&gt; B3[&quot;Ma tinstalich mn barra Web Store&quot;]<br>    B --&gt; B4[&quot;Password manager b autofill a7san mn JS access&quot;]<br>    B --&gt; B5[&quot;MFA / hardware keys — walakin fhem had l-7dd (chouf tet b3d)&quot;]<br>    C --&gt; C1[&quot;ExtensionInstallBlocklist / Allowlist via GPO&quot;]<br>    C --&gt; C2[&quot;Block egress l webhook.site, pastebin, Discord webhook API mn browsers&quot;]<br>    C --&gt; C3[&quot;Extension inventory + scoring (CRXcavator-style)&quot;]<br>    C --&gt; C4[&quot;Alert 3la extension install events (Chrome Enterprise logs)&quot;]<br></code></pre></td></tr></table></figure>
+
+<h3 id="User-Level-5-min-hardening"><a href="#User-Level-5-min-hardening" class="headerlink" title="User-Level (5 min hardening)"></a>User-Level (5 min hardening)</h3><ol>
+<li><code>chrome://extensions</code> → click 3la kol extension → “Site access” → <strong>“On click”</strong> bdl “On all sites”</li>
+<li>7ayed ay extension ma katkhddemhach</li>
+<li>9arn permissions dyal kol extension m3a lfunction dyalha: password manager khasso <code>cookies</code>+<code>scripting</code>, calculator la</li>
+<li>Ma tinstallich <code>.zip</code>&#x2F;<code>.crx</code> mn barra Web Store (developer mode sideloading)</li>
+<li>MFA 3la kolshi muhim — walakin <strong>wa9ef hna</strong>: SMS&#x2F;TOTP codes t9der tmchi lek  b phishing, w <strong>had l’article kamel howa mithal bli cookie theft kaydir bypass MFA , 7ta FIDO2&#x2F;hardware keys</strong>, 7it l’attacker ma kaydkholch b password — kayst3mel session cookie li sra9ha mn be3d ma nta dkhalti w kmmelti MFA. FIDO2 kat7mi mn phishing <strong>f login time</strong>, mashi mn session theft <strong>mn ba3d</strong> login. Protection hna: session lifetime 9sira, re-authentication 3la actions 7assasin, w anomaly detection (sudden change dyal IP&#x2F;device)</li>
+</ol>
+<h3 id="Enterprise-Level"><a href="#Enterprise-Level" class="headerlink" title="Enterprise-Level"></a>Enterprise-Level</h3><ul>
+<li>Chrome Enterprise policies: <code>ExtensionInstallBlocklist: [&quot;*&quot;]</code> + <code>ExtensionInstallAllowlist</code> (default-deny)</li>
+<li><code>ExtensionInstallSources</code> bash tbloki sideloading</li>
+<li>Egress filtering: block <code>discord.com/api/webhooks</code>, <code>webhook.site</code>, paste sites mn user-agents dyal browser</li>
+<li>Inventory + continuous scoring: CRXcavator, ExtensionTotal, wla internal script (6.2)</li>
+<li>Logging: Chrome Enterprise reporting → SIEM</li>
+</ul>
+<h2 id="Part-9-—-Key-Takeaways"><a href="#Part-9-—-Key-Takeaways" class="headerlink" title="Part 9 — Key Takeaways"></a>Part 9 — Key Takeaways</h2><ol>
+<li><strong>Permission mismatch howa l-mo2achir.</strong> Extension dyal fonts&#x2F;emoji&#x2F;notes 3endha <code>cookies</code>+<code>&lt;all_urls&gt;</code>+<code>scripting</code>? Red flag, bla ma tkhemmem bzaf.</li>
+<li><strong><code>HttpOnly</code> ma kay7mich</strong> mn <code>chrome.cookies</code> API dyal extensions. Session hijacking.</li>
+<li><strong>Encryption dyal exfil payload mashi bash t7mi victim</strong> — howa anti-egress-inspection. Multipart POST + encrypted blob l C2 &#x3D; IOC brasso.</li>
+<li><strong>Event-driven MV3 ma kaywa9efch stealer</strong>, kaydir diffusion ghir lwaqt dyal detection.</li>
+<li><strong>Static triage f 30 secondes:</strong> <code>manifest.json</code> → scoring dyal permissions → grep dangerous API patterns → sandbox dynamic.</li>
+<li><strong>Session cookie theft bypass MFA, FIDO2.</strong> Defense: least-privilege site access, default-deny enterprise policy, session lifetime 9sira, egress filtering.</li>
+</ol>
+<h2 id="References-Further-Reading"><a href="#References-Further-Reading" class="headerlink" title="References &amp; Further Reading"></a>References &amp; Further Reading</h2><ul>
+<li>Chrome Developer Docs — Permissions &amp; <code>chrome.cookies</code> API</li>
+<li>MDN — WebExtensions Manifest V3</li>
+<li>CRXcavator — automated extension risk scoring</li>
+<li>“DataSpii: How browser extensions harvested browsing data” — Ars Technica (2019)</li>
+<li>Chrome Enterprise — <code>ExtensionInstallBlocklist</code> policy docs</li>
+<li>OWASP — Session hijacking &amp; cookie security guidance</li>
+</ul>
+<hr>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages" style="justify-content: flex-end"><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/CyberMa/2026/08/11/Hack-the-Hacker-RCE/">Hack the Hacker - RCE Prev →</a></div></div></div></div><div class="bottom-btn"><div><a class="i-top" id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧ </a><a class="i-index" id="to-index" onClick="tocControl.change()" title="To Catalog"><span class="tocBtnIconBar"></span><span class="tocBtnIconBar"></span><span class="tocBtnIconBar"></span></a><a class="i-color" id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/CyberMa/" id="logo"><img src="/CyberMa/img/faction/logo.png" alt="CyberMa" style="margin:0;border-radius:0;"></a><h1 id="Dr"><a href="/">Klasster</a></h1><div id="description"><p>Coffee Music Attacks☕   CyberMa</p></div><div id="social-links"><a class="social" target="_blank" rel="noopener" href="https://github.com/Kl3s"><i class="fab fa-github" alt="GitHub"></i></a></div></div><div id="music-section"><p>Feeling exhausted? </p><p>Let's enjoy music!</p><div class="music-image"><img src="/CyberMa/img/faction/music.jpg" width="170" style="border-radius: 6px;"></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-toggle">▶ Play</button><button id="music-next">⏭</button></div><p id="music-index">Currently: 1 / 3</p></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Malicious-Extensions"><span class="toc-number">1.</span> <span class="toc-text">Malicious Extensions:</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-1-%E2%80%94-Anatomy-of-a-Malicious-Extension"><span class="toc-number">1.2.</span> <span class="toc-text">Part 1 — Anatomy of a Malicious Extension</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-2-%E2%80%94-The-Sample-%E2%80%9CFont-Helper%E2%80%9D"><span class="toc-number">1.3.</span> <span class="toc-text">Part 2 — The Sample: “Font Helper”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-manifest-json-%E2%80%94-LMask"><span class="toc-number">1.3.1.</span> <span class="toc-text">2.1 manifest.json — LMask</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-content-js-%E2%80%94-Credential-Harvester-Conceptual"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.2 content.js — Credential Harvester (Conceptual)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-background-js-%E2%80%94-Relay-Exfiltration"><span class="toc-number">1.3.3.</span> <span class="toc-text">2.3 background.js — Relay &amp; Exfiltration</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-3-%E2%80%94-How-Extensions-Bypass-HttpOnly-Cookies"><span class="toc-number">1.4.</span> <span class="toc-text">Part 3 — How Extensions Bypass HttpOnly Cookies</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-4-%E2%80%94-Anti-Analysis-Techniques-in-the-Sample"><span class="toc-number">1.5.</span> <span class="toc-text">Part 4 — Anti-Analysis Techniques in the Sample</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-5-%E2%80%94-Static-Analysis-Manual-Triage-Walkthrough"><span class="toc-number">1.6.</span> <span class="toc-text">Part 5 — Static Analysis: Manual Triage Walkthrough</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-1-Unpack-the-CRX"><span class="toc-number">1.6.1.</span> <span class="toc-text">Step 1: Unpack the CRX</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-2-Triage-manifest-json-30-secondes"><span class="toc-number">1.6.2.</span> <span class="toc-text">Step 2: Triage manifest.json (30 secondes)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-3-Grep-for-Dangerous-API-Patterns"><span class="toc-number">1.6.3.</span> <span class="toc-text">Step 3: Grep for Dangerous API Patterns</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-4-Review-Content-Scripts-Dynamically-safe"><span class="toc-number">1.6.4.</span> <span class="toc-text">Step 4: Review Content Scripts Dynamically (safe)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-6-%E2%80%94-Detection-Blue-Team-Playbook"><span class="toc-number">1.7.</span> <span class="toc-text">Part 6 — Detection: Blue Team Playbook</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-Network-Based-Detection"><span class="toc-number">1.7.1.</span> <span class="toc-text">6.1 Network-Based Detection</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-Host-Based-Detection"><span class="toc-number">1.7.2.</span> <span class="toc-text">6.2 Host-Based Detection</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-YARA-Rule-Conceptual-behavioral"><span class="toc-number">1.7.3.</span> <span class="toc-text">6.3 YARA Rule (Conceptual, behavioral)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-Browser-Level-IOCs"><span class="toc-number">1.7.4.</span> <span class="toc-text">6.4 Browser-Level IOCs</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-7-%E2%80%94-Real-World-Context"><span class="toc-number">1.8.</span> <span class="toc-text">Part 7 — Real-World Context</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-8-%E2%80%94-Defense-Checklist-User-Enterprise"><span class="toc-number">1.9.</span> <span class="toc-text">Part 8 — Defense Checklist (User + Enterprise)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#User-Level-5-min-hardening"><span class="toc-number">1.9.1.</span> <span class="toc-text">User-Level (5 min hardening)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Enterprise-Level"><span class="toc-number">1.9.2.</span> <span class="toc-text">Enterprise-Level</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-9-%E2%80%94-Key-Takeaways"><span class="toc-number">1.10.</span> <span class="toc-text">Part 9 — Key Takeaways</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#References-Further-Reading"><span class="toc-number">1.11.</span> <span class="toc-text">References &amp; Further Reading</span></a></li></ol></li></ol></div></div><footer><nobr>Cyberma By <a target="_blank" rel="noopener" href="https://github.com/Kl3s">Klasster</a></nobr><wbr></footer></aside></main><canvas id="canvas-dust"></canvas><script defer src="/CyberMa/js/music.js"></script></body></html>
