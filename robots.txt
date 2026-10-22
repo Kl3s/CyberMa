@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://klasster.is-pro.dev/sitemap.xml
