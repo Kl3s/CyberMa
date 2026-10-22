@@ -1,0 +1,156 @@
+<!DOCTYPE html><html lang="en-us" theme-mode="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Anti-debug Njrat Sample Analyse | CyberMa</title><meta name="keywords" content="RAT,Malware,Analyse,Reverse,Advaned,Research"><meta name="description" content="Analyse :**Difficulty:**🟡🟡🟡🟡⚪Category: Malware AnalysisEstimated reading time: 25-30 minutesPrerequisites: Comfortable with c , basic knowledge about malwares and RAT builder   ⚠ DisclaimerHad art">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Anti-debug Njrat Sample Analyse">
+<meta property="og:url" content="https://kl3s.github.io/CyberMa/2026/10/22/Anti-debug-Njrat-Sample-Analyse/index.html">
+<meta property="og:site_name" content="CyberMa">
+<meta property="og:description" content="Analyse :**Difficulty:**🟡🟡🟡🟡⚪Category: Malware AnalysisEstimated reading time: 25-30 minutesPrerequisites: Comfortable with c , basic knowledge about malwares and RAT builder   ⚠ DisclaimerHad art">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://kl3s.github.io/CyberMa/img/detectit.png">
+<meta property="og:image" content="https://kl3s.github.io/CyberMa/img/1.png">
+<meta property="og:image" content="https://kl3s.github.io/CyberMa/img/2.png">
+<meta property="og:image" content="https://kl3s.github.io/CyberMa/img/3.png">
+<meta property="og:image" content="https://kl3s.github.io/CyberMa/img/f.png">
+<meta property="og:image" content="https://kl3s.github.io/CyberMa/img/i.png">
+<meta property="og:image" content="https://kl3s.github.io/CyberMa/img/presistence.png">
+<meta property="og:image" content="https://kl3s.github.io/CyberMa/img/crazy.png">
+<meta property="og:image" content="https://kl3s.github.io/CyberMa/img/s.png">
+<meta property="og:image" content="https://kl3s.github.io/CyberMa/img/final.png">
+<meta property="article:published_time" content="2026-10-22T01:35:25.000Z">
+<meta property="article:modified_time" content="2026-10-22T03:01:16.781Z">
+<meta property="article:author" content="Klasster">
+<meta property="article:tag" content="RAT">
+<meta property="article:tag" content="Malware">
+<meta property="article:tag" content="Analyse">
+<meta property="article:tag" content="Reverse">
+<meta property="article:tag" content="Advaned">
+<meta property="article:tag" content="Research">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kl3s.github.io/CyberMa/img/detectit.png"><link rel="canonical" href="https://kl3s.github.io/CyberMa/2026/10/22/Anti-debug-Njrat-Sample-Analyse/"><link rel="icon" type="image/x-icon" href="/CyberMa/favicon.ico"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/Bender.ttf"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/BenderLight.woff2"><link rel="preload" as="font" crossorigin="anonymous" href="/CyberMa/font/JetBrainsMono-Regular.woff2"><link rel="stylesheet" href="/CyberMa/css/arknights.css"><style>@font-face {
+  font-family: Bender;
+  src: local('Bender'), url("/CyberMa/font/Bender.ttf"), url("/CyberMa/font/Bender.otf");
+}
+@font-face {
+  font-family: BenderLight;
+  src: local('BenderLight'), url("/CyberMa/font/BenderLight.woff2") format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: local('JetBrains Mono'), url('/CyberMa/font/JetBrainsMono-Regular.woff2') format('woff2');
+}
+</style><meta name="page-config" content="{&quot;code_fold&quot;:null}"><script class="pjax-js">var config = {"root":"/CyberMa/","code_fold":15,"search":{"preload":false,"activeHolder":"Enter here","blurHolder":"Search","noResult":"Data \"$0\" not found"},"code":{"codeInfo":"$0 - $1 lines","copy":"copy"}};
+var page_config = {
+  code_fold: null
+};
+function updatePageConfig() {
+  var newPageConfig = document.querySelector('meta[name="page-config"]');
+  if (newPageConfig) {
+    page_config = JSON.parse(newPageConfig.content);
+  }
+}
+document.addEventListener('pjax:complete', function() { updatePageConfig(); });
+updatePageConfig();</script><link type="text/css" rel="stylesheet" href="/CyberMa/lib/encrypt/hbe.style.css"><script src="//unpkg.com/mermaid@11.12.2/dist/mermaid.min.js"></script><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lightgallery.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-zoom.css"><link type="text/css" rel="stylesheet" href="//unpkg.com/lightgallery@2.7.1/css/lg-thumbnail.css"><link type="text/css" rel="stylesheet" href="/CyberMa/lib/fontawesome/css/all.min.css"><script>if (window.localStorage.getItem('theme-mode') === 'light')
+ document.documentElement.setAttribute('theme-mode', 'light')
+if (window.localStorage.getItem('theme-mode') === 'dark')
+ document.documentElement.setAttribute('theme-mode', 'dark')</script><style>@font-face {
+ font-family: BenderLight;
+ src: local('Bender'), url("/CyberMa/font/BenderLight.woff2") format('woff2');
+}
+@font-face {
+ font-family: 'JetBrains Mono';
+ src: local('JetBrains Mono'), url('/CyberMa/font/JetBrainsMono-Regular.woff2') format('woff2');
+}</style><style>:root {
+ --dark-background: url('https://ak.hypergryph.com/assets/index/images/ak/pc/bk.jpg');
+ --light-background: url('/CyberMa/img/bk.jpg');
+ --theme-encrypt-confirm: 'confirm'
+}</style><script defer src="/CyberMa/js/arknights.js"></script><script defer src="/CyberMa/js/search.js"></script><script defer type="module">import mermaid from '//unpkg.com/mermaid@11.12.2/dist/mermaid.esm.min.mjs';
+window.mermaid = mermaid;
+code.paintMermaid();
+</script><script async src="//unpkg.com/lightgallery@2.7.1/lightgallery.min.js"></script><script async src="//unpkg.com/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script><script async src="//unpkg.com/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.min.js"></script><script async src="/CyberMa/lib/encrypt/hbe.js"></script><script async src="/CyberMa/js/pjax.js"></script><script class="pjax-js">reset= () => {document.querySelector('.lg-container')?.remove()
+lightGallery(document.getElementById('post-bg'), {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js','data-pjax','.vercount','meta[name=page-config]'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script><script class="pjax-js">reset= () => {document.querySelector('.lg-container')?.remove()
+const postBg = document.querySelector('#post-bg');
+if (postBg) lightGallery(postBg, {
+  plugins: [lgZoom,lgThumbnail],
+  selector: '.item-img'})}</script><script>window.addEventListener("load",() => {pjax = new Pjax({
+ cacheBust: false,
+ selectors: ['title','article','#aside-block','.pjax-js','data-pjax','.vercount','meta[name=page-config]'],
+ switches: {'article': Pjax.switches.sideBySide},
+ switchesOptions: {
+   'article': {
+     classNames: {
+       remove: "pjax-out",
+       add: "pjax-in"
+     }
+   }
+ }
+});
+document.addEventListener("pjax:complete", reset);reset()})</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="loading" style="opacity: 0;"><div class="loadingBar left"></div><div class="loadingBar right"></div></div><main><header class="closed"><div class="navBtn"><i class="navBtnIcon"><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span><span class="navBtnIconBar"></span></i></div><nav><div class="navItem" id="search-header"><span class="navItemTitle"><input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="Search" spellcheck="false" maxlength="50" type="text" id="search-input"></span></div><div class="navItem" id="search-holder"></div><div class="search-popup" tabindex="0"><div id="search-result"></div></div><ol class="navContent"><li class="navItem"><a class="navBlock" href="/CyberMa/"><span class="navItemTitle">Home</span></a></li><li class="navItem" matchdata="categories,tags"><a class="navBlock" href="/CyberMa/archives/"><span class="navItemTitle">Archives</span></a></li><li class="navItem"><a class="navBlock" href="/CyberMa/about/"><span class="navItemTitle">About</span></a></li></ol></nav></header><article><div id="post-bg"><div id="post-title"><h1>Anti-debug Njrat Sample Analyse</h1><div id="post-info"><span>First Post: <div class="control"><time datetime="2026-10-22T01:35:25.000Z" id="date"> 2026-10-22</time></div></span><br><span>Last Update: <div class="control"><time datetime="2026-10-22T03:01:16.781Z" id="updated"> 2026-10-22</time></div></span></div></div><hr><div id="post-content"><h1 id="Analyse"><a href="#Analyse" class="headerlink" title="Analyse :"></a>Analyse :</h1><p>**Difficulty:**🟡🟡🟡🟡⚪<br><strong>Category:</strong> Malware Analysis<br><strong>Estimated reading time:</strong> 25-30 minutes<br><strong>Prerequisites:</strong> Comfortable with c , basic knowledge about malwares and RAT builder </p>
+<blockquote>
+<p>⚠ <strong>Disclaimer</strong><br>Had articale atkon feha real malware , rad lbal o dema tfkr : safety always not safety first.Ana deja khdam f VM o not attached to network im not telling u how to live ur life but thamal ur own risks. ila knti baghi tb3 m3aya use VM.</p>
+</blockquote>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Lyom anhdro 3la wahed mn achhar RATs li kaynin Njrat. anhawl nwri reds flags li kaynin feha f static first, moraha nchufu core dialha mn ldakhel in dynamic analyse so bnisba lnas li m3arfinch Njrat just google it lol. </p>
+<h2 id="Part-1-Before-We-Start"><a href="#Part-1-Before-We-Start" class="headerlink" title="Part 1 - Before We Start"></a>Part 1 - Before We Start</h2><p>9bl ma asln nbdaw l9ina wahed red flags li kibayno anahu had asln had sample li khdam 3lih rah malware : </p>
+<blockquote>
+<p>Rah mashi dima ktkon haka sample flagged just bcs its too old so dont trust the AV that much hawl tchuf strings,imports li kidir o dakchi li kikhlik t3rrf wash malware olala.</p>
+</blockquote>
+<div align="center" class="item-img" data-src="/CybermMa/img/detectit.png" class='item-img' data-src='/CyberMa/img/detectit.png'><img alt="Detect it easy" src="/CyberMa/img/detectit.png"/></div>
+
+<p>hna knchufu bli 3ndna juj hajat mohimin anahuwa malware li khdamin 3lih <strong>NET</strong> so we gonna use Dnspy o problem lakhr huwa anahu anti-analyse.<br>ms kaynin bzf dial toroq bash tdir bypass db nhdru 3lihom mn b3d.<br>db nmchiw nchufu strings. hit often kikono hsn mn detect it easy as I said detecta sample gher hit old. aju nchufu red flags li kaynin f strings: </p>
+<div align="center" class="item-img" data-src="/CyberMa/img/1.png" class='item-img' data-src='/CyberMa/img/1.png'><img alt="strings" src="/CyberMa/img/1.png"></img></div>
+
+<p>mn had strings kn9dro nchufu ana malware dayr des techniques bash ga3ma ykhdm f sandboxes</p>
+<div align="center" class="item-img" data-src="/CyberMa/img/2.png" class='item-img' data-src='/CyberMa/img/2.png'><img alt="strings" src="/CyberMa/img/2.png"></img></div>
+
+<p>hna knchufuh kiqalab wash kayn f VM (Vbox) o kichuf wash kayn tools dial decompile o analyse… hado kamlin red flags li tkhlik asln 100% its a malware without even run it. lol but let’s dive deep into it.</p>
+<div align="center" class="item-img" data-src="/CyberMa/img/3.png" class='item-img' data-src='/CyberMa/img/3.png'><img alt="strings" src="/CyberMa/img/3.png"></img></div>
+
+<p>hada proof akhor bli rah malware , hna knchufu technique dial presistence f REG o chfna ta domain m3ndnash proof bli rah huwa c2 ms kndn aykon huwa c2 dialna o pastebin i think its for grab another stager.</p>
+<blockquote>
+<p>kifma chfto f strings mashi bdarora tkon advanced bash t3rf rah hada malware strings kano wadhen bzf! wadhen ldarajat fhmt nos dial techs li kikhdm behum malware but isnt always the case.</p>
+</blockquote>
+<h2 id="Dnspy-Static"><a href="#Dnspy-Static" class="headerlink" title="Dnspy: Static"></a>Dnspy: Static</h2><p>Daba deja chfnah .NET donc nichan anmchiw ldnspy o nchufu </p>
+<div align="center" class="item-img" data-src="/CyberMa/img/f.png" class='item-img' data-src='/CyberMa/img/f.png'><img alt="ok function" src="/CyberMa/img/f.png"></img></div>
+
+<blockquote>
+<p>1 year ago finally i bypassed the anti-debug checks for the dynamic analyse.</p>
+</blockquote>
+<p>so mchet n9lb f logic dial malware . o mn dakchi li l9it </p>
+<div align="center" class="item-img" data-src="/CyberMa/img/i.png" class='item-img' data-src='/CyberMa/img/i.png'><img alt="I was Right" src="/CyberMa/img/i.png"></img></div>
+
+<p>Hadsi ga3ma khybni haha , h prob refer to <em>Host</em> o value huwa value dial dak c2. </p>
+<div align="center" class="item-img" data-src="/CyberMa/img/presistence.png" class='item-img' data-src='/CyberMa/img/presistence.png'><img alt="2 techs for presistence" src="/CyberMa/img/presistence.png"></img></div>
+
+<p>Saraha ml9itch chi function ola chi haja ghreba ola chi tech new kolchy normal i mean its a malware. but this function lmfao: </p>
+<div align="center" class="item-img" data-src="/CyberMa/img/crazy.png" class='item-img' data-src='/CyberMa/img/crazy.png'><img alt="funny function" src="/CyberMa/img/crazy.png"></img></div>
+
+<blockquote>
+<p>Saraha threat actors can be funny too tkhyl tkon chad lpc dialk ta ytl3 lik random strings hkk </p>
+</blockquote>
+<p>o ha chnu 9sdt bli rah like other classical malwares kitkhalfo fchi hajat ms kitjm3o f simple commands dialhom aghlabia kikono cmd ola powershell. and gonna be detected so far. </p>
+<div align="center" class="item-img" data-src="/CyberMa/img/s.png" class='item-img' data-src='/CyberMa/img/s.png'><img alt="classic cmd commands" src="/CyberMa/img/s.png"></img></div>
+
+<blockquote>
+<p>For red teamers and mal devs: gha b3do mn bhel hadchi wlh not that good sahel tflaga hawel tkhdm logic dialk yes i know u need to use them fchi hwayj ms for me aywli sahel ytflaga rah malware. BE CREATIVE PLEASE.</p>
+</blockquote>
+<h2 id="Outro"><a href="#Outro" class="headerlink" title="Outro:"></a>Outro:</h2><div align="center" class="item-img" data-src="/CyberMa/img/final.png" class='item-img' data-src='/CyberMa/img/final.png'><img alt="Tired of this" src="/CyberMa/img/final.png"></img></div>
+
+<p>Saraha ml9it lash ndir Dynamic analyse already chfna kolchy t9riban f sample. + kifash host kan bayen mn string </p>
+<blockquote>
+<p>⚠ <strong>Disclaimer</strong></p>
+<p>Dear Friends DO NOT use PUBLIC TOOLS LIKE RATS. kifma chfto rah awel haja bant hia host dial attacker + rah kikono vulns f tools bhel Xworm u can check the post <em>HACK THE HACKER</em>.<br>Fr use own tools. or private ones. Only on devices u own </p>
+</blockquote>
+<div id="paginator"></div></div><div id="post-footer"><div id="pages" style="justify-content: flex-end"><div class="footer-link" style="width: 50%;right:1px;border-left:1px #fe2 solid"><a href="/CyberMa/2026/10/20/malicious_extensions_blog_post/">Malicious Browser Extensions: Inside a Real-World Stealer Prev →</a></div></div></div></div><div class="bottom-btn"><div><a class="i-top" id="to-top" onClick="scrolls.scrolltop();" title="To Top" style="opacity: 0; display: none;">∧ </a><a class="i-index" id="to-index" onClick="tocControl.change()" title="To Catalog"><span class="tocBtnIconBar"></span><span class="tocBtnIconBar"></span><span class="tocBtnIconBar"></span></a><a class="i-color" id="color-mode" onClick="colorMode.change()" title="Change Theme"></a></div></div></article><aside><div id="about"><a href="/CyberMa/" id="logo"><img src="/CyberMa/img/faction/logo.png" alt="CyberMa" style="margin:0;border-radius:0;"></a><h1 id="Dr"><a href="/">Klasster</a></h1><div id="description"><p>Coffee Music Attacks☕   CyberMa</p></div><div id="social-links"><a class="social" target="_blank" rel="noopener" href="https://github.com/Kl3s"><i class="fab fa-github" alt="GitHub"></i></a></div></div><div id="music-section"><p>Feeling exhausted? </p><p>Let's enjoy music!</p><div class="music-image"><img src="/CyberMa/img/faction/music.jpg" width="170" style="border-radius: 6px;"></div><div class="music-controls"><button id="music-prev">⏮</button><button id="music-toggle">▶ Play</button><button id="music-next">⏭</button></div><p id="music-index">Currently: 1 / 3</p></div><div id="aside-block"><div id="toc-div"><h1>Catalog</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Analyse"><span class="toc-number">1.</span> <span class="toc-text">Analyse :</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-1-Before-We-Start"><span class="toc-number">1.2.</span> <span class="toc-text">Part 1 - Before We Start</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Dnspy-Static"><span class="toc-number">1.3.</span> <span class="toc-text">Dnspy: Static</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Outro"><span class="toc-number">1.4.</span> <span class="toc-text">Outro:</span></a></li></ol></li></ol></div></div><footer><nobr>Cyberma By <a target="_blank" rel="noopener" href="https://github.com/Kl3s">Klasster</a></nobr><wbr></footer></aside></main><canvas id="canvas-dust"></canvas><script defer src="/CyberMa/js/music.js"></script></body></html>
